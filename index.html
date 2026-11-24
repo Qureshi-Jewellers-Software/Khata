@@ -283,6 +283,7 @@ function vHome(v){
   const cash=sum(D.accs.filter(a=>a.type!=='card'),a=>accBal(a.id)), cards=D.accs.filter(a=>a.type==='card'), cardDue=-sum(cards,a=>accBal(a.id));
   const bud=Object.entries(D.budgets).filter(([c,l])=>l>0).map(([c,l])=>[c,l,catSpent(cur,c)]).sort((a,b)=>b[2]/b[1]-a[2]/a[1]);
   v.innerHTML=`
+  ${backupDue()?`<div class="card" style="border:2px solid var(--amber)"><h3>💾 Backup ka waqt ho gaya</h3><div class="m" style="font-size:13px">${backupDays()===null?'Abhi tak koi backup nahi liya.':'Akhri backup ko '+backupDays()+' din ho gaye.'} Ek tap mein backup file aur pichle 30 din ki Excel sheet le lein, phir Google Drive / WhatsApp par rakh lein.</div><button class="btn full g" onclick="backup();setTimeout(excel30,700)">💾 Backup + 📊 Excel abhi lein</button></div>`:''}
   ${rem.length&&cur===curPeriod()?`<div class="card"><h3>🔔 Yaad-dihani</h3>${rem.map(r=>`<div class="alert" ${r.pid?`onclick="openPerson('${r.pid}')"`:''}><span>${r.ic}</span><span class="${r.k}" style="font-weight:600">${esc(r.t)}</span></div>`).join('')}</div>`:''}
   <div class="card">
     <div class="stat s-bal" style="margin-bottom:10px"><small>Is mahine bacha (Aamdani − Kharcha)</small><b style="font-size:24px">${srs(inc-out)}</b></div>
@@ -830,7 +831,8 @@ function vReport(v){
   <div class="card"><h3>📅 Saal ${yr}</h3><div class="grid2">
     <div class="stat s-in"><small>Kul aamdani</small><b>${rs(sum(yt.filter(t=>t.type==='in'),t=>t.amount))}</b></div>
     <div class="stat s-out"><small>Kul kharcha</small><b>${rs(sum(yt.filter(t=>t.type==='out'),t=>t.amount))}</b></div></div></div>
-  <button class="btn full light noprint" onclick="exportCSV()">⬇ Is mahine ka Excel (CSV) download</button>`;
+  <button class="btn full light noprint" onclick="exportCSV()">⬇ Is mahine ka Excel (CSV) download</button>
+  <button class="btn full light noprint" onclick="excel30()">📊 Pichle 30 din ki Excel sheet</button>`;
 }
 function shareWA(){const {inc,out,cats}=monthSummary(cur);
   let lena=0,dena=0;D.people.forEach(p=>{const b=pBal(p.id);if(b>0)lena+=b;else dena-=b});
@@ -895,6 +897,7 @@ function vMore(v){
   <div class="card"><h3>💾 Backup file</h3>
     <div class="m" style="font-size:13px">Ek extra hifazat. Mahine mein ek dafa download kar ke Google Drive par rakh lein.${last?'<br>Akhri backup: '+new Date(last).toLocaleString():''}</div>
     <button class="btn full g" onclick="backup()">⬇ Backup download karein</button>
+    <button class="btn full light" onclick="excel30()">📊 Pichle 30 din ki Excel sheet</button>
     <button class="btn full light" onclick="$('restoreF').click()">⬆ Backup se data wapis layein</button>
     <input type="file" id="restoreF" accept=".json,application/json" style="display:none" onchange="restore(this)">
   </div>
@@ -1043,7 +1046,7 @@ function assetForm(id){const a=id?D.assets.find(x=>x.id===id):{name:'',type:'gol
 /* ================= IMPORT (Excel / CSV) ================= */
 function importSample(){const csv='﻿Tareekh,Qisam,Category,Raqam,Account,Note\n2026-11-01,Aamdani,Salary,90000,Bank,Office\n2026-11-02,Kharcha,Ration,4500,Cash (jeb),Imtiaz\n03/11/2026,Kharcha,Bijli,7200,,K-Electric\n';
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='khata-namuna.csv';a.click()}
-function loadXLSX(){return window.XLSX?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+function loadXLSX(){return window.XLSX?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement('script');s.src='xlsx.full.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
 function parseCSV(t){const rows=[];let r=[],f='',q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
   else if(c==='"')q=true;else if(c===','||c===';'||c==='\t'){r.push(f);f=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;r.push(f);rows.push(r);r=[];f=''}else f+=c}
   if(f||r.length){r.push(f);rows.push(r)}return rows.filter(x=>x.some(y=>String(y).trim()))}
@@ -1068,6 +1071,25 @@ async function importFile(inp){const f=inp.files[0];inp.value='';if(!f)return;le
   if(!out.length)return alert('Koi sahi line nahi mili');
   if(!confirm(out.length+' entries mili hain'+(skip?' ('+skip+' lines chhor di)':'')+'. Hisaab mein daal dein?'))return;
   const _u=snapU();D.tx.push(...out);save();render();toastUndo(out.length+' entries import ho gayi',()=>{D=migrate(JSON.parse(_u));save();render()})}
+
+/* ================= BACKUP REMINDER + 30-DAY EXCEL ================= */
+function backupDays(){const l=localStorage.getItem(KEY+'_lastbackup');return l?Math.floor((Date.now()-new Date(l))/864e5):null}
+function backupDue(){if(!D.set.installed){D.set.installed=today();save(true)}const d=backupDays();
+  if(d!==null)return d>=30;return dayDiff(D.set.installed)<=-30||(D.tx.length>=1&&-dayDiff(D.tx.map(t=>t.date).sort()[0])>=30)}
+async function excel30(){
+  const to=today(),fromD=new Date();fromD.setDate(fromD.getDate()-29);const from=fromD.getFullYear()+'-'+String(fromD.getMonth()+1).padStart(2,'0')+'-'+String(fromD.getDate()).padStart(2,'0');
+  const tx=D.tx.filter(t=>t.date>=from&&t.date<=to).sort((a,b)=>a.date.localeCompare(b.date));
+  const ent=[['Tareekh','Qisam','Category','Sub-category','Raqam','Account','Note']].concat(tx.map(t=>[t.date,t.type==='in'?'Aamdani':t.type==='out'?'Kharcha':'Transfer',t.type==='tr'?accName(t.from)+' -> '+accName(t.to):t.cat,t.sub||'',+t.amount,accName(t.acc),t.note||'']));
+  const inc=sum(tx.filter(t=>t.type==='in'),t=>t.amount),out=sum(tx.filter(t=>t.type==='out'),t=>t.amount);
+  const g={};tx.filter(t=>t.type==='out').forEach(t=>g[t.cat]=(g[t.cat]||0)+ +t.amount);
+  const sumry=[['Mera Khata — '+fd(from)+' se '+fd(to)],[],['Kul Aamdani',inc],['Kul Kharcha',out],['Bachat',inc-out],[],['Kharcha category wise','Raqam','%']].concat(Object.entries(g).sort((a,b)=>b[1]-a[1]).map(([c,a])=>[c,a,Math.round(a/out*100)+'%']));
+  const ud=[['Naam','Mobile','Lene hain','Dene hain']].concat(D.people.map(p=>{const b=pBal(p.id);return[p.name,p.phone||'',b>0?b:0,b<0?-b:0]}).filter(r=>r[2]||r[3]));
+  const ac=[['Account','Balance']].concat(D.accs.map(a=>[a.name,accBal(a.id)]));
+  const fn='khata-30din-'+to;
+  try{await loadXLSX();const wb=XLSX.utils.book_new();
+    [['Khulasa',sumry,[28,14,8]],['Entries',ent,[12,10,18,14,10,16,24]],['Udhaar',ud,[20,14,12,12]],['Accounts',ac,[22,14]]].forEach(([n,rows,w])=>{const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=w.map(x=>({wch:x}));XLSX.utils.book_append_sheet(wb,ws,n)});
+    XLSX.writeFile(wb,fn+'.xlsx');toast('Excel sheet download ✓')}
+  catch(e){const csv='﻿'+ent.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=fn+'.csv';a.click();toast('Internet nahi — CSV file di hai')}}
 
 /* ================= CALENDAR ================= */
 function vCal(v){
@@ -1541,6 +1563,15 @@ Sep|ستمبر|Sep
 Oct|اکتوبر|Oct
 Nov|نومبر|Nov
 Dec|دسمبر|Dec
+Backup ka waqt ho gaya|بیک اپ کا وقت ہو گیا|Time to back up
+Abhi tak koi backup nahi liya.|ابھی تک کوئی بیک اپ نہیں لیا۔|No backup taken yet.
+Akhri backup ko|آخری بیک اپ کو|Last backup was
+din ho gaye.|دن ہو گئے۔|days ago.
+Ek tap mein backup file aur pichle 30 din ki Excel sheet le lein, phir Google Drive / WhatsApp par rakh lein.|ایک ٹیپ میں بیک اپ فائل اور پچھلے 30 دن کی ایکسل شیٹ لے لیں، پھر گوگل ڈرائیو / واٹس ایپ پر رکھ لیں۔|Get the backup file and last 30 days Excel in one tap, then keep them on Google Drive / WhatsApp.
+Backup + 📊 Excel abhi lein|بیک اپ + 📊 ایکسل ابھی لیں|Backup + 📊 Excel now
+Pichle 30 din ki Excel sheet|پچھلے 30 دن کی ایکسل شیٹ|Last 30 days Excel sheet
+Excel sheet download|ایکسل شیٹ ڈاؤن لوڈ|Excel sheet downloaded
+Internet nahi — CSV file di hai|انٹرنیٹ نہیں — CSV فائل دی ہے|No internet — CSV file given
 Delete ho gaya|حذف ہو گیا|Deleted
 Wapis aa gaya|واپس آ گیا|Restored
 din|دن|days
