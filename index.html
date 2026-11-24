@@ -8,83 +8,102 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Mera Khata</title>
+<script src="config.js"></script>
 <style>
 :root{
-  --pri:#0b5cd5; --pri2:#0a47a8; --bg:#eef2f8; --card:#fff; --ink:#1b2333; --mut:#6b7486;
-  --green:#12a150; --greenbg:#e5f6ec; --red:#e0393e; --redbg:#fdeaea; --line:#e3e8f0; --amber:#e8a200;
+  --pri:#0b5cd5; --pri2:#0a47a8; --bg:#eef2f8; --card:#fff; --ink:#1b2333; --mut:#6b7486; --soft:#f2f4f8; --prisoft:#e8effc;
+  --green:#12a150; --greenbg:#e5f6ec; --red:#e0393e; --redbg:#fdeaea; --line:#e3e8f0; --amber:#e8a200; --amberbg:#fff5dc;
 }
+body.dark{--bg:#0f1420;--card:#192030;--ink:#e8ecf4;--mut:#93a0b6;--soft:#232c3f;--prisoft:#1f2d4a;--line:#2a344a;--greenbg:#143326;--redbg:#3a1a1d;--amberbg:#3a2f12;--pri:#3d82f0;--pri2:#2c5fc0}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px}
-button{font:inherit;cursor:pointer;border:0}
-input,select,textarea{font:inherit;width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+button{font:inherit;cursor:pointer;border:0;color:inherit}
+input,select,textarea{font:inherit;width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--pri);border-color:transparent}
 label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .app{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:84px}
 header{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;padding:14px 16px 18px;border-radius:0 0 22px 22px;position:sticky;top:0;z-index:5}
-.htop{display:flex;align-items:center;justify-content:space-between}
-.htop h1{font-size:19px;margin:0}
+.htop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.htop h1{font-size:19px;margin:0;flex:1}
 .iconbtn{background:rgba(255,255,255,.16);color:#fff;width:38px;height:38px;border-radius:12px;font-size:18px;display:inline-flex;align-items:center;justify-content:center}
+.cloud{font-size:11px;background:rgba(255,255,255,.16);padding:5px 9px;border-radius:20px;white-space:nowrap}
 .month{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px}
 .month b{min-width:130px;text-align:center;font-size:16px}
 main{padding:14px}
 .card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(20,40,80,.06)}
-.card h3{margin:0 0 10px;font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.card h3{margin:0 0 10px;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .stat{border-radius:14px;padding:12px}
 .stat small{display:block;font-size:12px;opacity:.85}
 .stat b{font-size:19px;display:block;margin-top:3px}
 .s-in{background:var(--greenbg);color:var(--green)}
 .s-out{background:var(--redbg);color:var(--red)}
-.s-bal{background:#e8effc;color:var(--pri)}
-.s-mut{background:#f2f4f8;color:var(--ink)}
+.s-bal{background:var(--prisoft);color:var(--pri)}
+.s-mut{background:var(--soft);color:var(--ink)}
+.s-amb{background:var(--amberbg);color:var(--amber)}
 .row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
 .row:last-child{border-bottom:0}
-.av{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none;background:#e8effc;color:var(--pri);font-size:17px}
+.av{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none;background:var(--prisoft);color:var(--pri);font-size:17px}
 .grow{flex:1;min-width:0}
 .grow .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .grow .s{font-size:12px;color:var(--mut);margin-top:2px}
 .amt{font-weight:700;text-align:right;white-space:nowrap}
-.g{color:var(--green)}.r{color:var(--red)}.m{color:var(--mut)}
-.pill{font-size:11px;padding:3px 8px;border-radius:20px;background:#f2f4f8;color:var(--mut);font-weight:600}
+.g{color:var(--green)}.r{color:var(--red)}.m{color:var(--mut)}.a{color:var(--amber)}
+.pill{font-size:11px;padding:3px 8px;border-radius:20px;background:var(--soft);color:var(--mut);font-weight:600;white-space:nowrap}
 .pill.g{background:var(--greenbg)}.pill.r{background:var(--redbg)}
 .btn{background:var(--pri);color:#fff;padding:12px 16px;border-radius:12px;font-weight:600}
 .btn.full{width:100%;margin-top:14px}
 .btn.g{background:var(--green);color:#fff}.btn.r{background:var(--red);color:#fff}
-.btn.light{background:#e8effc;color:var(--pri)}
+.btn.light{background:var(--prisoft);color:var(--pri)}
 .btn.sm{padding:7px 12px;font-size:13px;border-radius:10px}
 .btns2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btns3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .empty{text-align:center;color:var(--mut);padding:24px 8px;font-size:14px}
-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center;z-index:6;padding-bottom:env(safe-area-inset-bottom)}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:6;padding-bottom:env(safe-area-inset-bottom)}
 nav .in{display:flex;max-width:560px;width:100%}
 nav button{flex:1;background:none;padding:8px 2px 9px;color:var(--mut);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px}
 nav button span{font-size:20px}
 nav button.on{color:var(--pri);font-weight:700}
 .fab{position:fixed;right:max(16px,calc(50% - 264px));bottom:82px;width:58px;height:58px;border-radius:18px;background:var(--pri);color:#fff;font-size:30px;box-shadow:0 6px 16px rgba(11,92,213,.4);z-index:6}
-.seg{display:flex;background:#f2f4f8;border-radius:12px;padding:4px;gap:4px;margin-bottom:12px}
-.seg button{flex:1;background:none;padding:9px;border-radius:9px;color:var(--mut);font-weight:600;font-size:13px}
-.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:4px;gap:4px;margin-bottom:12px}
+.seg button{flex:1;background:none;padding:9px 4px;border-radius:9px;color:var(--mut);font-weight:600;font-size:13px}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{background:#f2f4f8;color:var(--ink);padding:8px 12px;border-radius:20px;font-size:13px}
+.chip{background:var(--soft);color:var(--ink);padding:8px 12px;border-radius:20px;font-size:13px}
 .chip.on{background:var(--pri);color:#fff}
-.sheet-bg{position:fixed;inset:0;background:rgba(10,20,40,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:#fff;width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto;animation:up .2s ease}
+.sheet-bg{position:fixed;inset:0;background:rgba(10,20,40,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto;animation:up .2s ease}
 @keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
 .sheet h2{margin:0 0 6px;font-size:18px;display:flex;justify-content:space-between;align-items:center}
-.x{background:#f2f4f8;width:34px;height:34px;border-radius:10px;font-size:16px}
-.bar{height:8px;background:#f2f4f8;border-radius:6px;overflow:hidden;margin-top:6px}
+.x{background:var(--soft);width:34px;height:34px;border-radius:10px;font-size:16px}
+.bar{height:8px;background:var(--soft);border-radius:6px;overflow:hidden;margin-top:6px}
 .bar i{display:block;height:100%;background:var(--pri);border-radius:6px}
-.toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);background:#1b2333;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:30}
-.chk{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;flex:none;color:#fff;font-size:15px}
+.toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);background:#1b2333;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:60;max-width:90%;text-align:center}
+.chk{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;flex:none;color:#fff;font-size:15px}
 .chk.on{background:var(--green);border-color:var(--green)}
 .months{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
-.months button{background:#f2f4f8;padding:8px 2px;border-radius:9px;font-size:12px;color:var(--ink)}
+.months button{background:var(--soft);padding:8px 2px;border-radius:9px;font-size:12px;color:var(--ink)}
 .months button.on{background:var(--green);color:#fff}
 .months button.me{outline:2px solid var(--amber)}
 .lock{position:fixed;inset:0;background:linear-gradient(135deg,var(--pri),var(--pri2));z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;padding:24px}
-.lock input{max-width:220px;text-align:center;font-size:24px;letter-spacing:8px;margin-top:16px}
+.lock input{max-width:260px;margin-top:12px;color:#1b2333;background:#fff}
+.lock .pin{text-align:center;font-size:24px;letter-spacing:8px;max-width:220px}
 .search{margin-bottom:12px}
 .big{font-size:26px;font-weight:800}
 .hint{font-size:12px;color:var(--mut);margin-top:6px}
+.mic{width:48px;height:48px;border-radius:14px;background:var(--prisoft);color:var(--pri);font-size:22px;flex:none}
+.mic.on{background:var(--red);color:#fff;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.6}}
+.alert{display:flex;gap:10px;align-items:center;padding:10px;border-radius:12px;background:var(--amberbg);margin-bottom:8px;font-size:14px}
+.thumb{width:90px;height:90px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.menu button{background:var(--card);border-radius:14px;padding:14px 10px;text-align:left;box-shadow:0 1px 3px rgba(20,40,80,.06);font-weight:600;font-size:14px}
+.menu button span{display:block;font-size:22px;margin-bottom:4px}
+.switch{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
+.tg{width:48px;height:28px;border-radius:20px;background:var(--line);position:relative;flex:none}
+.tg::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s}
+.tg.on{background:var(--green)}.tg.on::after{left:23px}
+@media print{header,nav,.fab,.noprint{display:none!important}body{background:#fff}.card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}.app{padding:0}}
 </style>
 </head>
 <body>
@@ -92,7 +111,8 @@ nav button.on{color:var(--pri);font-weight:700}
   <header>
     <div class="htop">
       <h1 id="htitle">Mera Khata</h1>
-      <button class="iconbtn" onclick="go('more')" title="Settings">⚙️</button>
+      <span class="cloud" id="cloudSt" style="display:none"></span>
+      <button class="iconbtn" onclick="go('more')" title="Aur">☰</button>
     </div>
     <div class="month" id="monthBar">
       <button class="iconbtn" onclick="shiftMonth(-1)">‹</button>
@@ -117,68 +137,116 @@ nav button.on{color:var(--pri);font-weight:700}
 const KEY='mera_khata_v1';
 const DEF_CATS={
   in:['Salary','Business','Committee Mili','Gift','Kiraya Aamdani','Doosri Aamdani'],
-  out:['Ration','Bijli','Pani','Gas','Credit Card Bill','Internet/Mobile','Kiraya','School Fees','Petrol','Dawai','Committee Qist','Bahar Khana','Kapre','Miscellaneous']
+  out:['Ration','Bijli','Pani','Gas','Internet/Mobile','Kiraya','School Fees','Petrol','Dawai','Committee Qist','Bahar Khana','Kapre','Zakat/Sadqa','Miscellaneous']
 };
 const CAT_ICON={Salary:'💼',Business:'🏪','Committee Mili':'🎉',Gift:'🎁','Kiraya Aamdani':'🏠','Doosri Aamdani':'➕',
- Ration:'🛒',Bijli:'💡',Pani:'🚰',Gas:'🔥','Credit Card Bill':'💳','Internet/Mobile':'📶',Kiraya:'🏠','School Fees':'🎓',Petrol:'⛽',Dawai:'💊','Committee Qist':'👥','Bahar Khana':'🍔',Kapre:'👕',Miscellaneous:'📦'};
-let D=load();
-function blank(){return{tx:[],people:[],led:[],committees:[],bills:[
+ Ration:'🛒',Bijli:'💡',Pani:'🚰',Gas:'🔥','Credit Card Bill':'💳','Internet/Mobile':'📶',Kiraya:'🏠','School Fees':'🎓',Petrol:'⛽',Dawai:'💊','Committee Qist':'👥','Bahar Khana':'🍔',Kapre:'👕','Zakat/Sadqa':'🤲',Miscellaneous:'📦',Transfer:'🔁'};
+const ACC_ICON={cash:'💵',bank:'🏦',wallet:'📱',card:'💳'};
+// voice words -> category
+const VOICE_CAT={Ration:['ration','rashan','sauda','grocery','doodh','milk','sabzi','atta','آٹا','راشن','دودھ','سبزی'],Bijli:['bijli','electric','light','k-electric','بجلی'],Pani:['pani','water','پانی'],Gas:['gas','sui gas','گیس'],
+ 'Internet/Mobile':['internet','mobile','load','balance','wifi','انٹرنیٹ'],Kiraya:['kiraya','rent','کرایہ'],'School Fees':['school','fees','fee','tuition','اسکول','فیس'],Petrol:['petrol','fuel','diesel','پٹرول'],Dawai:['dawai','medicine','doctor','dawa','دوائی','ڈاکٹر'],
+ 'Bahar Khana':['khana','hotel','restaurant','food','pizza','کھانا'],Kapre:['kapre','kapde','clothes','کپڑے'],Salary:['salary','tankhwah','tankha','تنخواہ'],Business:['business','karobar','کاروبار'],Gift:['gift','tohfa','تحفہ'],'Zakat/Sadqa':['zakat','sadqa','khairat','زکوٰۃ','صدقہ']};
+
+function blank(){return{v:2,tx:[],people:[],led:[],committees:[],bills:[
   {id:uid(),name:'Bijli ka bill',cat:'Bijli',amount:0,due:10},
   {id:uid(),name:'Gas ka bill',cat:'Gas',amount:0,due:10},
   {id:uid(),name:'Pani ka bill',cat:'Pani',amount:0,due:10},
-  {id:uid(),name:'Credit Card',cat:'Credit Card Bill',amount:0,due:20}
- ],billPaid:{},cats:JSON.parse(JSON.stringify(DEF_CATS)),set:{pin:'',name:'Mera Khata'}}}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.tx){d.cats=d.cats||DEF_CATS;d.set=d.set||{};d.billPaid=d.billPaid||{};return d}}catch(e){}return blank()}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(D));localStorage.setItem(KEY+'_lastsave',new Date().toISOString())}catch(e){toast('Save nahi hua!')}}
+  {id:uid(),name:'Credit Card bill',cat:'Credit Card Bill',amount:0,due:20,card:'card'}
+ ],billPaid:{},cats:JSON.parse(JSON.stringify(DEF_CATS)),accs:defAccs(),budgets:{},goals:[],recur:[],recurDone:{},zakat:{},set:{pin:'',name:'Mera Khata',dark:false,notif:false}}}
+function defAccs(){return[{id:'cash',name:'Cash (jeb)',type:'cash',open:0},{id:'bank',name:'Bank',type:'bank',open:0},{id:'wallet',name:'JazzCash / Easypaisa',type:'wallet',open:0},{id:'card',name:'Credit Card',type:'card',open:0,limit:0}]}
+function migrate(d){
+  d.cats=d.cats||JSON.parse(JSON.stringify(DEF_CATS));d.set=d.set||{};d.billPaid=d.billPaid||{};
+  d.accs=d.accs||defAccs();d.budgets=d.budgets||{};d.goals=d.goals||[];d.recur=d.recur||[];d.recurDone=d.recurDone||{};d.zakat=d.zakat||{};
+  d.tx.forEach(t=>{if(t.type!=='tr'&&t.acc===undefined)t.acc='cash'});
+  d.bills.forEach(b=>{if(b.cat==='Credit Card Bill'&&!b.card){const c=d.accs.find(a=>a.type==='card');if(c)b.card=c.id}});
+  d.v=2;return d}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.tx)return migrate(d)}catch(e){}return blank()}
+let D=load();
+function save(skipCloud){try{D.updated=Date.now();localStorage.setItem(KEY,JSON.stringify(D))}catch(e){toast('Save nahi hua! Phone ki memory check karein')}if(!skipCloud)cloudPush()}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
 
 /* ================= HELPERS ================= */
 const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-let cur=ym(new Date()), tab='home', hisaabType='all', hisaabCat='', udSearch='';
+let cur=ym(new Date()), tab='home', hisaabType='all', hisaabCat='', hisaabQ='', udSearch='';
 function ym(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function dayDiff(s){const a=new Date(s+'T00:00:00'),b=new Date(today()+'T00:00:00');return Math.round((a-b)/864e5)}
 function mLabel(m){const[y,mm]=m.split('-');return MN[+mm-1]+' '+y}
 function addM(m,n){let[y,mm]=m.split('-').map(Number);mm+=n;while(mm>12){mm-=12;y++}while(mm<1){mm+=12;y--}return y+'-'+String(mm).padStart(2,'0')}
+function lastDay(m){const[y,mm]=m.split('-').map(Number);return new Date(y,mm,0).getDate()}
+function mDate(m,d){return m+'-'+String(Math.min(Math.max(1,d||1),lastDay(m))).padStart(2,'0')}
 function rs(n){n=Math.round(+n||0);return 'Rs '+Math.abs(n).toLocaleString('en-PK')}
+function srs(n){return (n<0?'− ':'')+rs(n)}
 function fd(s){if(!s)return'';const[y,m,d]=s.split('-');return (+d)+' '+MN[+m-1]+' '+y}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function $(id){return document.getElementById(id)}
-function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),1800)}
+function toast(t,ms){document.querySelectorAll('.toast').forEach(x=>x.remove());const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),ms||1900)}
 function monthTx(m){return D.tx.filter(t=>t.date.startsWith(m))}
 function sum(a,f){return a.reduce((s,x)=>s+(+f(x)||0),0)}
 function pBal(pid){return sum(D.led.filter(l=>l.pid===pid),l=>l.kind==='gave'?l.amount:-l.amount)}
+function accName(id){const a=D.accs.find(x=>x.id===id);return a?a.name:''}
+function accBal(id){const a=D.accs.find(x=>x.id===id);if(!a)return 0;let b=+a.open||0;
+  D.tx.forEach(t=>{const v=+t.amount||0;if(t.type==='in'&&t.acc===id)b+=v;else if(t.type==='out'&&t.acc===id)b-=v;else if(t.type==='tr'){if(t.from===id)b-=v;if(t.to===id)b+=v}});
+  D.led.forEach(l=>{if(l.acc===id)b+=l.kind==='gave'?-l.amount:+l.amount});
+  return b}
+function accOpts(sel,noneLabel){return (noneLabel?`<option value="" ${!sel?'selected':''}>${noneLabel}</option>`:'')+D.accs.map(a=>`<option value="${a.id}" ${a.id===sel?'selected':''}>${ACC_ICON[a.type]||''} ${esc(a.name)}</option>`).join('')}
 function shiftMonth(n){cur=addM(cur,n);render()}
+function catSpent(m,c){return sum(monthTx(m).filter(t=>t.type==='out'&&t.cat===c),t=>t.amount)}
 
 /* ================= NAV ================= */
-function go(t){tab=t;window.scrollTo(0,0);render()}
+let stack=[];
+function go(t){if(t!==tab)stack.push(tab);tab=t;window.scrollTo(0,0);render()}
+function back(def){tab=stack.pop()||def||'home';render()}
 function fabClick(){
   if(tab==='udhaar')return personForm();
   if(tab==='committee')return committeeForm();
   if(tab==='bills')return billForm();
+  if(tab==='accounts')return accForm();
+  if(tab==='goals')return goalForm();
+  if(tab==='recur')return recurForm();
   txForm();
 }
 function render(){
+  document.body.classList.toggle('dark',!!D.set.dark);
   $('monthLbl').textContent=mLabel(cur);
   $('htitle').textContent=D.set.name||'Mera Khata';
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
-  const showMonth=['home','hisaab','bills','report'].includes(tab);
-  $('monthBar').style.display=showMonth?'flex':'none';
-  $('fab').style.display=['more','report','person'].includes(tab)?'none':'block';
-  const v=$('view');
-  ({home:vHome,hisaab:vHisaab,udhaar:vUdhaar,committee:vCommittee,bills:vBills,more:vMore,report:vReport,person:vPerson}[tab]||vHome)(v);
+  $('monthBar').style.display=['home','hisaab','bills','report','budget'].includes(tab)?'flex':'none';
+  $('fab').style.display=['more','report','person','budget','zakat'].includes(tab)?'none':'block';
+  ({home:vHome,hisaab:vHisaab,udhaar:vUdhaar,committee:vCommittee,bills:vBills,more:vMore,report:vReport,person:vPerson,
+    accounts:vAccounts,budget:vBudget,goals:vGoals,recur:vRecur,zakat:vZakat}[tab]||vHome)($('view'));
+}
+
+/* ================= REMINDERS ================= */
+function reminders(){
+  const out=[], m=ym(new Date()), paid=D.billPaid[m]||{};
+  D.bills.forEach(b=>{if(paid[b.id]||!b.due)return;const dd=dayDiff(mDate(m,b.due));if(dd<=3)out.push({ic:'🧾',t:`${b.name}: ${dd<0?(-dd)+' din guzar gaye!':dd===0?'aaj akhri din':dd+' din baqi'}`,k:dd<0?'r':'a'})});
+  D.people.forEach(p=>{const bal=pBal(p.id);if(!bal)return;
+    const dues=D.led.filter(l=>l.pid===p.id&&l.due).map(l=>l.due).sort();if(!dues.length)return;const due=dues[dues.length-1];const dd=dayDiff(due);
+    if(dd<=3)out.push({ic:'🤝',t:`${p.name}: ${rs(bal)} ${bal>0?'lene':'dene'} — ${dd<0?(-dd)+' din se baqi':dd===0?'aaj wapsi':dd+' din mein wapsi'}`,k:dd<0?'r':'a',pid:p.id})});
+  D.committees.forEach(c=>{if(cActive(c,m)&&!(c.paid||{})[m])out.push({ic:'👥',t:`${c.name}: is mahine ki qist ${rs(c.amount)} baqi`,k:'a'})});
+  return out}
+function notifyOnce(){
+  if(!D.set.notif||!('Notification' in window)||Notification.permission!=='granted')return;
+  const k='khata_notif_day';if(localStorage.getItem(k)===today())return;
+  const r=reminders();if(!r.length)return;localStorage.setItem(k,today());
+  try{navigator.serviceWorker.ready.then(sw=>sw.showNotification('Mera Khata — yaad-dihani',{body:r.map(x=>x.t).join('\n'),icon:'icon-192.png'}))}catch(e){}
 }
 
 /* ================= HOME ================= */
 function vHome(v){
   const tx=monthTx(cur), inc=sum(tx.filter(t=>t.type==='in'),t=>t.amount), out=sum(tx.filter(t=>t.type==='out'),t=>t.amount);
   let lena=0,dena=0;D.people.forEach(p=>{const b=pBal(p.id);if(b>0)lena+=b;else dena-=b});
-  const bills=D.bills, paid=D.billPaid[cur]||{}, unpaid=bills.filter(b=>!paid[b.id]);
-  const comDue=D.committees.filter(c=>cActive(c,cur)&&!(c.paid||{})[cur]);
+  const paid=D.billPaid[cur]||{}, unpaid=D.bills.filter(b=>!paid[b.id]);
   const byCat={};tx.filter(t=>t.type==='out').forEach(t=>byCat[t.cat]=(byCat[t.cat]||0)+ +t.amount);
   const top=Object.entries(byCat).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const rem=reminders();
+  const cash=sum(D.accs.filter(a=>a.type!=='card'),a=>accBal(a.id)), cards=D.accs.filter(a=>a.type==='card'), cardDue=-sum(cards,a=>accBal(a.id));
+  const bud=Object.entries(D.budgets).filter(([c,l])=>l>0).map(([c,l])=>[c,l,catSpent(cur,c)]).sort((a,b)=>b[2]/b[1]-a[2]/a[1]);
   v.innerHTML=`
+  ${rem.length&&cur===ym(new Date())?`<div class="card"><h3>🔔 Yaad-dihani</h3>${rem.map(r=>`<div class="alert" ${r.pid?`onclick="openPerson('${r.pid}')"`:''}><span>${r.ic}</span><span class="${r.k}" style="font-weight:600">${esc(r.t)}</span></div>`).join('')}</div>`:''}
   <div class="card">
-    <div class="stat s-bal" style="margin-bottom:10px"><small>Is mahine bacha (Aamdani − Kharcha)</small><b style="font-size:24px">${inc-out<0?'− ':''}${rs(inc-out)}</b></div>
+    <div class="stat s-bal" style="margin-bottom:10px"><small>Is mahine bacha (Aamdani − Kharcha)</small><b style="font-size:24px">${srs(inc-out)}</b></div>
     <div class="grid2">
       <div class="stat s-in"><small>⬇ Aamdani</small><b>${rs(inc)}</b></div>
       <div class="stat s-out"><small>⬆ Kharcha</small><b>${rs(out)}</b></div>
@@ -187,114 +255,329 @@ function vHome(v){
       <button class="btn g" onclick="txForm('in')">+ Aamdani</button>
       <button class="btn r" onclick="txForm('out')">+ Kharcha</button>
     </div>
+    <button class="btn full light" style="margin-top:10px" onclick="txForm('out',null,true)">🎤 Bol kar entry karein</button>
+  </div>
+  <div class="card" onclick="go('accounts')">
+    <h3>💰 Mere paise <span class="pill">accounts ›</span></h3>
+    <div class="grid2">
+      <div class="stat s-bal"><small>Haath mein (cash + bank + wallet)</small><b>${srs(cash)}</b></div>
+      ${cards.length?`<div class="stat s-out"><small>💳 Credit card baqaya</small><b>${rs(Math.max(0,cardDue))}</b></div>`:''}
+    </div>
   </div>
   <div class="card" onclick="go('udhaar')">
-    <h3>🤝 Udhaar (sab log) <span class="pill">dekhein ›</span></h3>
+    <h3>🤝 Udhaar <span class="pill">dekhein ›</span></h3>
     <div class="grid2">
       <div class="stat s-in"><small>Mujhe lene hain</small><b>${rs(lena)}</b></div>
       <div class="stat s-out"><small>Mujhe dene hain</small><b>${rs(dena)}</b></div>
     </div>
   </div>
+  ${bud.length?`<div class="card" onclick="go('budget')"><h3>🎯 Budget <span class="pill">sab ›</span></h3>${bud.slice(0,4).map(budRow).join('')}</div>`:''}
   <div class="card">
     <h3>🧾 Is mahine baqi bills <span class="pill ${unpaid.length?'r':'g'}">${unpaid.length?unpaid.length+' baqi':'Sab ada ✓'}</span></h3>
     ${unpaid.length?unpaid.map(b=>`<div class="row"><div class="av">${CAT_ICON[b.cat]||'🧾'}</div><div class="grow"><div class="t">${esc(b.name)}</div><div class="s">Akhri tareekh: ${b.due||'-'} ${MN[+cur.split('-')[1]-1]}</div></div><button class="btn sm g" onclick="payBill('${b.id}')">Ada karein</button></div>`).join(''):'<div class="m" style="font-size:13px">Is mahine ke sab bill ada ho gaye.</div>'}
-    ${comDue.map(c=>`<div class="row"><div class="av">👥</div><div class="grow"><div class="t">${esc(c.name)} (qist)</div><div class="s">${rs(c.amount)}</div></div><button class="btn sm g" onclick="toggleComPay('${c.id}','${cur}')">Ada karein</button></div>`).join('')}
   </div>
   <div class="card">
     <h3>📊 Kahan kharch hua <span class="pill" onclick="go('report')">Report ›</span></h3>
     ${top.length?top.map(([c,a])=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${CAT_ICON[c]||'•'} ${esc(c)}</span><b>${rs(a)}</b></div><div class="bar"><i style="width:${Math.max(3,a/out*100)}%"></i></div></div>`).join(''):'<div class="empty">Abhi koi kharcha nahi likha.</div>'}
   </div>
+  ${D.goals.length?`<div class="card" onclick="go('goals')"><h3>⭐ Bachat ke goal <span class="pill">sab ›</span></h3>${D.goals.slice(0,3).map(goalRow).join('')}</div>`:''}
   <div class="card">
-    <h3>🕒 Haal hi ke entries <span class="pill" onclick="go('hisaab')">Sab ›</span></h3>
+    <h3>🕒 Haal hi ki entries <span class="pill" onclick="go('hisaab')">Sab ›</span></h3>
     ${txList(tx.slice().sort(sortTx).slice(0,6))||'<div class="empty">Koi entry nahi. Neeche + dabayein.</div>'}
   </div>`;
 }
+function budRow([c,l,s]){const p=s/l*100,col=p>=100?'var(--red)':p>=80?'var(--amber)':'var(--green)';
+  return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${CAT_ICON[c]||'•'} ${esc(c)}</span><span><b style="color:${col}">${rs(s)}</b> <span class="m">/ ${rs(l)}</span></span></div><div class="bar"><i style="width:${Math.min(100,p)}%;background:${col}"></i></div>${p>=100?`<div class="hint r">⚠️ Budget se ${rs(s-l)} zyada</div>`:''}</div>`}
 function sortTx(a,b){return b.date.localeCompare(a.date)||(b.ts||0)-(a.ts||0)}
-function txList(a){return a.map(t=>`<div class="row" onclick="txForm(null,'${t.id}')"><div class="av" style="background:${t.type==='in'?'var(--greenbg)':'var(--redbg)'}">${CAT_ICON[t.cat]||(t.type==='in'?'⬇':'⬆')}</div><div class="grow"><div class="t">${esc(t.cat)}</div><div class="s">${fd(t.date)}${t.note?' · '+esc(t.note):''}</div></div><div class="amt ${t.type==='in'?'g':'r'}">${t.type==='in'?'+':'−'} ${rs(t.amount)}</div></div>`).join('')}
+function txList(a){return a.map(t=>{
+  if(t.type==='tr')return `<div class="row" onclick="trForm('${t.id}')"><div class="av">🔁</div><div class="grow"><div class="t">${esc(accName(t.from))} → ${esc(accName(t.to))}</div><div class="s">${fd(t.date)}${t.note?' · '+esc(t.note):''}</div></div><div class="amt m">${rs(t.amount)}</div></div>`;
+  return `<div class="row" onclick="txForm(null,'${t.id}')"><div class="av" style="background:${t.type==='in'?'var(--greenbg)':'var(--redbg)'}">${CAT_ICON[t.cat]||(t.type==='in'?'⬇':'⬆')}</div><div class="grow"><div class="t">${esc(t.cat)}${t.photo?' 📷':''}${t.rid?' 🔄':''}</div><div class="s">${fd(t.date)}${t.acc?' · '+(ACC_ICON[(D.accs.find(a=>a.id===t.acc)||{}).type]||''):''}${t.note?' · '+esc(t.note):''}</div></div><div class="amt ${t.type==='in'?'g':'r'}">${t.type==='in'?'+':'−'} ${rs(t.amount)}</div></div>`}).join('')}
 
-/* ================= HISAAB (Transactions) ================= */
+/* ================= HISAAB ================= */
 function vHisaab(v){
-  let tx=monthTx(cur).sort(sortTx);
+  const q=hisaabQ.trim().toLowerCase();
+  let tx=q?D.tx.filter(t=>(t.cat+' '+(t.note||'')+' '+t.amount+' '+accName(t.acc)).toLowerCase().includes(q)).sort(sortTx):monthTx(cur).sort(sortTx);
   if(hisaabType!=='all')tx=tx.filter(t=>t.type===hisaabType);
   if(hisaabCat)tx=tx.filter(t=>t.cat===hisaabCat);
-  const cats=[...new Set(monthTx(cur).filter(t=>hisaabType==='all'||t.type===hisaabType).map(t=>t.cat))];
-  const total=sum(tx,t=>t.type==='in'?t.amount:-t.amount);
+  const base=q?D.tx:monthTx(cur);
+  const cats=[...new Set(base.filter(t=>t.type!=='tr'&&(hisaabType==='all'||t.type===hisaabType)).map(t=>t.cat))];
+  const total=sum(tx,t=>t.type==='in'?t.amount:t.type==='out'?-t.amount:0);
   const groups={};tx.forEach(t=>(groups[t.date]=groups[t.date]||[]).push(t));
   v.innerHTML=`
+  <input class="search" id="hq" placeholder="🔍 Sab mahino mein dhoondein (naam, note, raqam)" value="${esc(hisaabQ)}">
   <div class="seg">
     <button class="${hisaabType==='all'?'on':''}" onclick="hisaabType='all';hisaabCat='';render()">Sab</button>
     <button class="${hisaabType==='in'?'on':''}" onclick="hisaabType='in';hisaabCat='';render()">Aamdani</button>
     <button class="${hisaabType==='out'?'on':''}" onclick="hisaabType='out';hisaabCat='';render()">Kharcha</button>
+    <button class="${hisaabType==='tr'?'on':''}" onclick="hisaabType='tr';hisaabCat='';render()">Transfer</button>
   </div>
-  ${cats.length>1?`<div class="chips" style="margin-bottom:12px"><button class="chip ${!hisaabCat?'on':''}" onclick="hisaabCat='';render()">Sab categories</button>${cats.map(c=>`<button class="chip ${hisaabCat===c?'on':''}" onclick="hisaabCat='${esc(c)}';render()">${esc(c)}</button>`).join('')}</div>`:''}
-  <div class="card"><div style="display:flex;justify-content:space-between"><span class="m">${tx.length} entries</span><b class="${total>=0?'g':'r'}">${total<0?'− ':''}${rs(total)}</b></div></div>
-  ${Object.keys(groups).length?Object.entries(groups).map(([d,a])=>`<div class="card"><h3>${fd(d)} <span class="pill">${rs(sum(a,t=>t.type==='in'?t.amount:-t.amount))}</span></h3>${txList(a)}</div>`).join(''):'<div class="card empty">Is mahine koi entry nahi.<br>Neeche <b>+</b> dabayein.</div>'}`;
+  ${cats.length>1?`<div class="chips" style="margin-bottom:12px" id="hcats"><button class="chip ${!hisaabCat?'on':''}" data-c="">Sab</button>${cats.map(c=>`<button class="chip ${hisaabCat===c?'on':''}" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div>`:''}
+  <div class="card"><div style="display:flex;justify-content:space-between"><span class="m">${q?'Talash: ':''}${tx.length} entries</span><b class="${total>=0?'g':'r'}">${srs(total)}</b></div></div>
+  ${Object.keys(groups).length?Object.entries(groups).map(([d,a])=>`<div class="card"><h3>${fd(d)} <span class="pill">${srs(sum(a,t=>t.type==='in'?t.amount:t.type==='out'?-t.amount:0))}</span></h3>${txList(a)}</div>`).join(''):`<div class="card empty">${q?'Kuch nahi mila.':'Is mahine koi entry nahi.<br>Neeche <b>+</b> dabayein.'}</div>`}`;
+  let tm;$('hq').oninput=e=>{clearTimeout(tm);tm=setTimeout(()=>{hisaabQ=e.target.value;render();const s=$('hq');s.focus();s.setSelectionRange(999,999)},350)};
+  if($('hcats'))$('hcats').onclick=e=>{const b=e.target.closest('button');if(b){hisaabCat=b.dataset.c;render()}};
 }
-function txForm(type,id){
-  const t=id?D.tx.find(x=>x.id===id):{type:type||'out',cat:'',amount:'',date:cur===ym(new Date())?today():cur+'-01',note:''};
-  let tp=t.type, cat=t.cat;
+
+/* ---------- Entry form (with voice + photo) ---------- */
+function txForm(type,id,voice){
+  const t=id?D.tx.find(x=>x.id===id):{type:type||'out',cat:'',amount:'',date:cur===ym(new Date())?today():cur+'-01',note:'',acc:D.set.defAcc||'cash'};
+  let tp=t.type, cat=t.cat, photo=null, photoChanged=false;
+  const keep=()=>{t.amount=$('fAmt').value;t.date=$('fDate').value;t.note=$('fNote').value;t.acc=$('fAcc').value};
   const draw=()=>{
     const cats=D.cats[tp];
     sheet(`<h2>${id?'Entry badlein':'Nayi entry'}<button class="x" onclick="closeM()">✕</button></h2>
     <div class="seg" style="margin-top:8px">
       <button class="${tp==='in'?'on':''}" id="tpIn">⬇ Aamdani</button>
       <button class="${tp==='out'?'on':''}" id="tpOut">⬆ Kharcha</button>
+      ${!id?`<button id="tpTr">🔁 Transfer</button>`:''}
     </div>
-    <label>Raqam (Rs)</label><input id="fAmt" type="number" inputmode="decimal" value="${t.amount}" placeholder="0">
+    <label>Raqam (Rs)</label>
+    <div style="display:flex;gap:8px"><input id="fAmt" type="number" inputmode="decimal" value="${t.amount}" placeholder="0"><button class="mic" id="fMic" title="Bol kar">🎤</button></div>
+    <div class="hint" id="vHeard"></div>
     <label>Category</label>
     <div class="chips" id="catChips">${cats.map(c=>`<button class="chip ${cat===c?'on':''}" data-c="${esc(c)}">${CAT_ICON[c]||''} ${esc(c)}</button>`).join('')}<button class="chip" data-new="1">＋ Nayi</button></div>
+    <label>${tp==='in'?'Paise kahan aaye':'Kis se diye'}</label><select id="fAcc">${accOpts(t.acc,'— koi account nahi —')}</select>
     <label>Tareekh</label><input id="fDate" type="date" value="${t.date}">
     <label>Note (zaroori nahi)</label><input id="fNote" value="${esc(t.note)}" placeholder="Maslan: Imtiaz store se">
+    <label>Raseed / bill ki photo (zaroori nahi)</label>
+    <div style="display:flex;gap:10px;align-items:center"><img id="fImg" class="thumb" style="display:none"><button class="btn sm light" id="fPhBtn">📷 Photo lein</button><button class="btn sm light" id="fPhDel" style="display:none;color:var(--red)">Hatayein</button></div>
+    <input type="file" id="fPh" accept="image/*" capture="environment" style="display:none">
     <button class="btn full ${tp==='in'?'g':'r'}" id="fSave">Save karein</button>
     ${id?`<button class="btn full light" style="color:var(--red)" id="fDel">🗑 Delete karein</button>`:''}`);
     $('tpIn').onclick=()=>{keep();tp='in';cat='';draw()};
     $('tpOut').onclick=()=>{keep();tp='out';cat='';draw()};
+    if($('tpTr'))$('tpTr').onclick=()=>{closeM();trForm()};
     $('catChips').onclick=e=>{const b=e.target.closest('button');if(!b)return;
       if(b.dataset.new){const n=prompt('Nayi category ka naam:');if(n&&n.trim()){keep();D.cats[tp].push(n.trim());save();cat=n.trim();draw()}return}
       cat=b.dataset.c;[...$('catChips').children].forEach(x=>x.classList.toggle('on',x===b))};
-    $('fSave').onclick=()=>{
+    $('fMic').onclick=()=>listen(txt=>{
+      $('vHeard').textContent='Suna: "'+txt+'"';const r=parseVoice(txt);
+      if(r.amount)$('fAmt').value=r.amount;
+      if(r.cat){if(!D.cats.out.includes(r.cat)&&D.cats.in.includes(r.cat)&&tp!=='in'){keep();tp='in';cat=r.cat;draw();$('vHeard').textContent='Suna: "'+txt+'"';return}
+        if(D.cats[tp].includes(r.cat)){cat=r.cat;[...$('catChips').children].forEach(x=>x.classList.toggle('on',x.dataset.c===cat))}}
+      if(r.note&&!$('fNote').value)$('fNote').value=r.note;
+    });
+    const showImg=src=>{if(src){$('fImg').src=src;$('fImg').style.display='block';$('fPhDel').style.display='inline-block';$('fPhBtn').textContent='📷 Badlein'}else{$('fImg').style.display='none';$('fPhDel').style.display='none';$('fPhBtn').textContent='📷 Photo lein'}};
+    $('fPhBtn').onclick=()=>$('fPh').click();
+    $('fPh').onchange=async e=>{const f=e.target.files[0];if(!f)return;photo=await compress(f);photoChanged=true;showImg(photo)};
+    $('fPhDel').onclick=()=>{photo=null;photoChanged=true;showImg(null)};
+    $('fImg').onclick=()=>{const w=window.open();if(w)w.document.write('<img src="'+$('fImg').src+'" style="width:100%">')};
+    if(photo)showImg(photo);else if(id&&t.photo&&!photoChanged)idbGet(id).then(p=>{if(p){photo=p;showImg(p)}});
+    $('fSave').onclick=async()=>{
       const a=+$('fAmt').value;if(!a||a<=0)return toast('Raqam likhein');if(!cat)return toast('Category chunein');
-      const o={type:tp,cat,amount:a,date:$('fDate').value||today(),note:$('fNote').value.trim()};
-      if(id)Object.assign(t,o);else D.tx.push({id:uid(),ts:Date.now(),...o});
-      save();closeM();toast('Save ho gaya ✓');render()};
-    if(id)$('fDel').onclick=()=>{if(confirm('Ye entry delete karein?')){D.tx=D.tx.filter(x=>x.id!==id);unlinkTx(id);save();closeM();render()}};
-    setTimeout(()=>!id&&$('fAmt').focus(),150);
+      const o={type:tp,cat,amount:a,date:$('fDate').value||today(),note:$('fNote').value.trim(),acc:$('fAcc').value};
+      let tid=id;
+      if(id)Object.assign(t,o);else{tid=uid();D.tx.push({id:tid,ts:Date.now(),...o})}
+      const tt=D.tx.find(x=>x.id===tid);
+      if(photoChanged){if(photo){await idbSet(tid,photo);tt.photo=1}else{await idbDel(tid);delete tt.photo}}
+      if(o.acc!==D.set.defAcc){D.set.defAcc=o.acc}
+      save();closeM();
+      const lim=+D.budgets[o.cat];
+      if(tp==='out'&&lim>0){const s=catSpent(o.date.slice(0,7),o.cat);if(s>lim)toast('⚠️ '+o.cat+' ka budget '+rs(s-lim)+' se paar!',3200);else if(s>=lim*.8)toast('⚠️ '+o.cat+' budget ka '+Math.round(s/lim*100)+'% istemal',2800);else toast('Save ho gaya ✓')}
+      else toast('Save ho gaya ✓');
+      render()};
+    if(id)$('fDel').onclick=()=>{if(confirm('Ye entry delete karein?')){D.tx=D.tx.filter(x=>x.id!==id);unlinkTx(id);idbDel(id);save();closeM();render()}};
+    setTimeout(()=>!id&&!voice&&$('fAmt').focus(),150);
   };
-  const keep=()=>{t.amount=$('fAmt').value;t.date=$('fDate').value;t.note=$('fNote').value};
   draw();
+  if(voice)setTimeout(()=>$('fMic').click(),250);
 }
 function unlinkTx(id){Object.values(D.billPaid).forEach(m=>{for(const k in m)if(m[k]===id)delete m[k]});
-  D.committees.forEach(c=>{for(const k in (c.paid||{}))if(c.paid[k]===id)delete c.paid[k];if(c.recvTx===id){c.received=false;c.recvTx=null}})}
+  D.committees.forEach(c=>{for(const k in (c.paid||{}))if(c.paid[k]===id)delete c.paid[k];if(c.recvTx===id){c.received=false;c.recvTx=null}});
+  for(const k in D.recurDone)if(D.recurDone[k]===id)D.recurDone[k]='deleted'}
 
-/* ================= UDHAAR (People ledger, Easy Khata style) ================= */
+/* ---------- Transfer form ---------- */
+function trForm(id){
+  const t=id?D.tx.find(x=>x.id===id):{from:'bank',to:'cash',amount:'',date:today(),note:''};
+  sheet(`<h2>🔁 ${id?'Transfer badlein':'Paise ek jagah se doosri jagah'}<button class="x" onclick="closeM()">✕</button></h2>
+  <div class="hint">Maslan bank se cash nikalna, ya credit card ka bill bank se dena. Ye kharcha nahi ginta.</div>
+  <label>Kahan se</label><select id="tF">${accOpts(t.from)}</select>
+  <label>Kahan gaye</label><select id="tT">${accOpts(t.to)}</select>
+  <label>Raqam (Rs)</label><input id="tA" type="number" inputmode="decimal" value="${t.amount}">
+  <label>Tareekh</label><input id="tD" type="date" value="${t.date}">
+  <label>Note</label><input id="tN" value="${esc(t.note)}">
+  <button class="btn full" id="tS">Save karein</button>
+  ${id?`<button class="btn full light" style="color:var(--red)" id="tX">🗑 Delete karein</button>`:''}`);
+  $('tS').onclick=()=>{const o={type:'tr',cat:'Transfer',from:$('tF').value,to:$('tT').value,amount:+$('tA').value,date:$('tD').value||today(),note:$('tN').value.trim()};
+    if(!o.amount)return toast('Raqam likhein');if(o.from===o.to)return toast('Dono account alag chunein');
+    if(id)Object.assign(t,o);else D.tx.push({id:uid(),ts:Date.now(),...o});save();closeM();toast('Save ✓');render()};
+  if(id)$('tX').onclick=()=>{if(confirm('Delete karein?')){D.tx=D.tx.filter(x=>x.id!==id);unlinkTx(id);save();closeM();render()}};
+}
+
+/* ---------- Voice ---------- */
+let recog=null;
+function listen(cb){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR)return alert('Is browser mein awaz se likhna nahi chalta. Chrome istemal karein.');
+  const btn=$('fMic');
+  if(recog){recog.stop();return}
+  recog=new SR();recog.lang=D.set.vlang||'en-IN';recog.interimResults=false;recog.maxAlternatives=1;
+  btn&&btn.classList.add('on');
+  recog.onresult=e=>cb(e.results[0][0].transcript);
+  recog.onerror=e=>{toast(e.error==='not-allowed'?'Mic ki ijazat dein':'Awaz samajh nahi aayi, dobara bolein')};
+  recog.onend=()=>{recog=null;btn&&btn.classList.remove('on')};
+  recog.start();toast('Bolein: maslan "Ration 4500"');
+}
+function parseVoice(txt){
+  let s=' '+txt.toLowerCase().replace(/,/g,'')+' ';
+  // numbers in Urdu digits -> latin
+  s=s.replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+  const W={ek:1,aik:1,one:1,do:2,two:2,teen:3,three:3,char:4,chaar:4,four:4,panch:5,paanch:5,five:5,chhe:6,che:6,six:6,saat:7,seven:7,aath:8,eight:8,nau:9,nine:9,das:10,ten:10,bees:20,twenty:20,pachas:50,pachaas:50,fifty:50,dedh:1.5,dhai:2.5,dhaai:2.5};
+  const M={hazar:1e3,hazaar:1e3,hajar:1e3,thousand:1e3,'ہزار':1e3,lakh:1e5,lac:1e5,'لاکھ':1e5,sau:100,so:100,hundred:100,'سو':100};
+  const toks=s.trim().split(/\s+/);let total=0,curN=0,found=false;
+  for(const tk of toks){
+    const n=parseFloat(tk);
+    if(!isNaN(n)&&/^\d/.test(tk)){curN+=n;found=true}
+    else if(W[tk]!==undefined){curN+=W[tk];found=true}
+    else if(M[tk]){if(!curN)curN=1;if(M[tk]>=1000){total+=curN*M[tk];curN=0}else curN*=M[tk];found=true}
+    else if(tk==='rupay'||tk==='rupees'||tk==='rs'||tk==='rupaye'||tk==='روپے'){}
+  }
+  const amount=found?Math.round(total+curN):0;
+  let cat='';const all=[...D.cats.out,...D.cats.in];
+  for(const c of all)if(s.includes(c.toLowerCase())){cat=c;break}
+  if(!cat)for(const[c,ws]of Object.entries(VOICE_CAT)){if(all.includes(c)&&ws.some(w=>s.includes(w))){cat=c;break}}
+  const note=txt.split(/\s+/).filter(w=>{const l=w.toLowerCase().replace(/,/g,'');return !/^[\d.]+$/.test(l)&&W[l]===undefined&&!M[l]&&!['rupay','rupees','rs','rupaye','روپے'].includes(l)}).join(' ').trim();
+  return{amount,cat,note:note.length>2&&note.length<60?note:''}
+}
+
+/* ---------- Photos (IndexedDB, phone only) ---------- */
+let _db;
+function idb(){return _db||(_db=new Promise((res,rej)=>{const r=indexedDB.open('khata_photos',1);r.onupgradeneeded=()=>r.result.createObjectStore('p');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))}
+async function idbSet(k,v){const db=await idb();return new Promise(r=>{const t=db.transaction('p','readwrite');t.objectStore('p').put(v,k);t.oncomplete=r;t.onerror=r})}
+async function idbGet(k){try{const db=await idb();return await new Promise(r=>{const q=db.transaction('p').objectStore('p').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)})}catch(e){return null}}
+async function idbDel(k){try{const db=await idb();db.transaction('p','readwrite').objectStore('p').delete(k)}catch(e){}}
+function compress(file){return new Promise(res=>{const img=new Image();img.onload=()=>{const mx=1000,sc=Math.min(1,mx/Math.max(img.width,img.height));const c=document.createElement('canvas');c.width=img.width*sc;c.height=img.height*sc;c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.65))};img.src=URL.createObjectURL(file)})}
+
+/* ================= ACCOUNTS ================= */
+function vAccounts(v){
+  v.innerHTML=`<button class="btn sm light" onclick="back()" style="margin-bottom:10px">‹ Wapis</button>
+  <div class="card"><h3>💰 Mere accounts</h3>
+  ${D.accs.map(a=>{const b=accBal(a.id);return `<div class="row" onclick="accForm('${a.id}')"><div class="av">${ACC_ICON[a.type]}</div><div class="grow"><div class="t">${esc(a.name)}</div><div class="s">${a.type==='card'?(b<0?'Card ka baqaya (dena hai)':'Koi baqaya nahi')+(a.limit?' · Limit '+rs(a.limit):''):'Balance'}</div></div><div class="amt ${a.type==='card'?(b<0?'r':'g'):b<0?'r':'g'}">${a.type==='card'?rs(b):srs(b)}</div></div>`}).join('')}
+  </div>
+  <button class="btn full" onclick="trForm()">🔁 Paise transfer karein (bank → cash, card ka bill)</button>
+  <div class="hint">💳 Credit card se kharcha karein to entry mein "Kis se diye" = Credit Card chunein. Kharcha ginega aur card ka baqaya barhega. Card ka bill ada karna sirf transfer hai, dobara kharcha nahi ginta.</div>`;
+}
+function accForm(id){
+  const a=id?D.accs.find(x=>x.id===id):{name:'',type:'bank',open:0,limit:0};
+  const isCard=()=>$('aT').value==='card';
+  sheet(`<h2>${id?'Account badlein':'Naya account'}<button class="x" onclick="closeM()">✕</button></h2>
+  <label>Naam</label><input id="aN" value="${esc(a.name)}" placeholder="Maslan: Meezan Bank">
+  <label>Qisam</label><select id="aT">${[['cash','💵 Cash'],['bank','🏦 Bank'],['wallet','📱 JazzCash/Easypaisa'],['card','💳 Credit Card']].map(([k,l])=>`<option value="${k}" ${a.type===k?'selected':''}>${l}</option>`).join('')}</select>
+  <label id="aOL">${a.type==='card'?'Abhi card par kitna baqaya hai':'Shuru ka balance (aaj kitne paise hain)'}</label><input id="aO" type="number" inputmode="decimal" value="${a.type==='card'?(-a.open||''):(a.open||'')}">
+  <div id="aLW" style="${a.type==='card'?'':'display:none'}"><label>Card limit (zaroori nahi)</label><input id="aL" type="number" inputmode="decimal" value="${a.limit||''}"></div>
+  <button class="btn full" id="aS">Save karein</button>
+  ${id&&D.accs.length>1?`<button class="btn full light" style="color:var(--red)" id="aX">🗑 Account hatayein</button>`:''}`);
+  $('aT').onchange=()=>{$('aLW').style.display=isCard()?'':'none';$('aOL').textContent=isCard()?'Abhi card par kitna baqaya hai':'Shuru ka balance (aaj kitne paise hain)'};
+  $('aS').onclick=()=>{const o={name:$('aN').value.trim(),type:$('aT').value,open:(+$('aO').value||0)*($('aT').value==='card'?-1:1),limit:+($('aL').value)||0};if(!o.name)return toast('Naam likhein');
+    if(id)Object.assign(a,o);else D.accs.push({id:uid(),...o});save();closeM();render()};
+  if($('aX'))$('aX').onclick=()=>{if(D.tx.some(t=>t.acc===id||t.from===id||t.to===id)&&!confirm('Is account ki entries hain. Phir bhi hatayein? (entries rahengi, account ka naam hat jayega)'))return;
+    D.accs=D.accs.filter(x=>x.id!==id);save();closeM();render()};
+}
+
+/* ================= BUDGET ================= */
+function vBudget(v){
+  const tx=monthTx(cur), out=sum(tx.filter(t=>t.type==='out'),t=>t.amount), totB=sum(Object.values(D.budgets),x=>x);
+  v.innerHTML=`<button class="btn sm light" onclick="back()" style="margin-bottom:10px">‹ Wapis</button>
+  ${totB?`<div class="card"><div class="grid2"><div class="stat s-bal"><small>Kul budget</small><b>${rs(totB)}</b></div><div class="stat ${out>totB?'s-out':'s-in'}"><small>Kharch hua</small><b>${rs(out)}</b></div></div></div>`:''}
+  <div class="card"><h3>🎯 Category ka mahana budget</h3>
+  <div class="hint" style="margin-bottom:8px">Har category ki had likhein. Khali chhor dein to koi had nahi. Had ke 80% par peeli aur paar hone par laal warning aayegi.</div>
+  ${D.cats.out.map(c=>{const s=catSpent(cur,c),l=+D.budgets[c]||0;return `<div class="row"><div class="grow"><div class="t">${CAT_ICON[c]||'•'} ${esc(c)}</div><div class="s ${l&&s>l?'r':''}">Is mahine: ${rs(s)}</div></div><input type="number" inputmode="numeric" data-c="${esc(c)}" class="bIn" value="${l||''}" placeholder="Had" style="width:110px"></div>`}).join('')}
+  <button class="btn full" onclick="document.querySelectorAll('.bIn').forEach(i=>{const v=+i.value;if(v>0)D.budgets[i.dataset.c]=v;else delete D.budgets[i.dataset.c]});save();toast('Budget save ✓');render()">Save karein</button></div>`;
+}
+
+/* ================= GOALS ================= */
+function goalRow(g){const s=sum(g.adds||[],x=>x.amount),p=g.target?s/g.target*100:0;
+  return `<div style="margin-bottom:12px" onclick="event.stopPropagation();goalOpen('${g.id}')"><div style="display:flex;justify-content:space-between;font-size:14px"><span>⭐ <b>${esc(g.name)}</b></span><span><b class="g">${rs(s)}</b> <span class="m">/ ${rs(g.target)}</span></span></div><div class="bar"><i style="width:${Math.min(100,p)}%;background:var(--green)"></i></div><div class="hint">${p>=100?'🎉 Goal poora!':Math.round(p)+'% · '+rs(g.target-s)+' baqi'}${g.by?' · '+fd(g.by)+' tak':''}</div></div>`}
+function vGoals(v){
+  v.innerHTML=`<button class="btn sm light" onclick="back()" style="margin-bottom:10px">‹ Wapis</button>
+  <div class="card"><h3>⭐ Bachat ke goal</h3>${D.goals.length?D.goals.map(goalRow).join(''):'<div class="empty">Koi goal nahi. + daba kar goal banayein (maslan Umrah, bike, shaadi).</div>'}</div>`}
+function goalForm(id){const g=id?D.goals.find(x=>x.id===id):{name:'',target:'',by:''};
+  sheet(`<h2>${id?'Goal badlein':'Naya goal'}<button class="x" onclick="closeM()">✕</button></h2>
+  <label>Kis cheez ke liye</label><input id="gN" value="${esc(g.name)}" placeholder="Maslan: Umrah">
+  <label>Kitne paise chahiye (Rs)</label><input id="gT" type="number" inputmode="decimal" value="${g.target}">
+  <label>Kab tak (zaroori nahi)</label><input id="gB" type="date" value="${g.by||''}">
+  <button class="btn full" id="gS">Save karein</button>
+  ${id?`<button class="btn full light" style="color:var(--red)" id="gX">🗑 Goal hatayein</button>`:''}`);
+  $('gS').onclick=()=>{const o={name:$('gN').value.trim(),target:+$('gT').value,by:$('gB').value};if(!o.name||!o.target)return toast('Naam aur raqam likhein');
+    if(id)Object.assign(g,o);else D.goals.push({id:uid(),adds:[],...o});save();closeM();render()};
+  if(id)$('gX').onclick=()=>{if(confirm('Goal hatayein?')){D.goals=D.goals.filter(x=>x.id!==id);save();closeM();render()}}}
+function goalOpen(id){const g=D.goals.find(x=>x.id===id),s=sum(g.adds||[],x=>x.amount);
+  let perM='';if(g.by&&s<g.target){const[y,m]=g.by.split('-').map(Number),n=new Date(),left=(y-n.getFullYear())*12+(m-n.getMonth()-1);if(left>0)perM=`<div class="hint">Waqt par poora karne ke liye har mahine ~${rs((g.target-s)/left)} jama karein.</div>`}
+  sheet(`<h2>⭐ ${esc(g.name)}<button class="x" onclick="closeM()">✕</button></h2>
+  <div class="big g">${rs(s)} <span class="m" style="font-size:15px;font-weight:400">/ ${rs(g.target)}</span></div>${perM}
+  <label>Aaj kitne jama kiye</label><div style="display:flex;gap:8px"><input id="gA" type="number" inputmode="decimal"><button class="btn g" id="gAdd">+ Jama</button></div>
+  <button class="btn sm light" style="margin-top:8px" id="gOut">− Nikale</button>
+  <div style="margin-top:12px">${(g.adds||[]).slice().reverse().map(a=>`<div class="row"><div class="grow s">${fd(a.date)}</div><b class="${a.amount<0?'r':'g'}">${srs(a.amount)}</b></div>`).join('')}</div>
+  <button class="btn full light" onclick="closeM();goalForm('${id}')">✏️ Goal edit</button>`);
+  const add=sign=>{const a=+$('gA').value;if(!a)return toast('Raqam likhein');g.adds=g.adds||[];g.adds.push({amount:a*sign,date:today()});save();closeM();toast('Save ✓');render()};
+  $('gAdd').onclick=()=>add(1);$('gOut').onclick=()=>add(-1)}
+
+/* ================= RECURRING ================= */
+function runRecurring(){
+  const now=ym(new Date()), dNow=new Date().getDate();let n=0;
+  D.recur.forEach(r=>{if(r.off)return;let m=r.start||now;let guard=0;
+    while(m<=now&&guard++<120){
+      const k=r.id+'|'+m;
+      if(!D.recurDone[k]&&(m<now||dNow>=Math.min(r.day,lastDay(m)))){
+        const t={id:uid(),ts:Date.now(),type:r.type,cat:r.cat,amount:r.amount,acc:r.acc,date:mDate(m,r.day),note:r.note||'',rid:r.id};
+        D.tx.push(t);D.recurDone[k]=t.id;n++}
+      m=addM(m,1)}});
+  if(n){save();toast(n+' har-mahine wali entry khud likh di 🔄',2600)}
+}
+function vRecur(v){
+  v.innerHTML=`<button class="btn sm light" onclick="back()" style="margin-bottom:10px">‹ Wapis</button>
+  <div class="card"><h3>🔄 Har mahine khud lagne wali entries</h3>
+  <div class="hint" style="margin-bottom:6px">Salary, kiraya, school fees jaisi cheezein. Muqarrar tareekh par khud hisaab mein likh jayengi.</div>
+  ${D.recur.length?D.recur.map(r=>`<div class="row" onclick="recurForm('${r.id}')"><div class="av" style="background:${r.type==='in'?'var(--greenbg)':'var(--redbg)'}">${CAT_ICON[r.cat]||'🔄'}</div><div class="grow"><div class="t">${esc(r.cat)}${r.note?' · '+esc(r.note):''}</div><div class="s">Har mahine ${r.day} tareekh${r.off?' · BAND':''}</div></div><div class="amt ${r.type==='in'?'g':'r'}">${rs(r.amount)}</div></div>`).join(''):'<div class="empty">Koi nahi. + dabayein.</div>'}</div>`}
+function recurForm(id){const r=id?D.recur.find(x=>x.id===id):{type:'out',cat:'Kiraya',amount:'',day:1,acc:'cash',note:'',start:ym(new Date())};let tp=r.type;
+  const draw=()=>{sheet(`<h2>${id?'Badlein':'Har mahine wali entry'}<button class="x" onclick="closeM()">✕</button></h2>
+  <div class="seg"><button class="${tp==='in'?'on':''}" id="rI">⬇ Aamdani</button><button class="${tp==='out'?'on':''}" id="rO">⬆ Kharcha</button></div>
+  <label>Category</label><select id="rC">${D.cats[tp].map(c=>`<option ${c===r.cat?'selected':''}>${esc(c)}</option>`).join('')}</select>
+  <div class="grid2"><div><label>Raqam</label><input id="rA" type="number" inputmode="decimal" value="${r.amount}"></div><div><label>Har mahine ki tareekh</label><input id="rD" type="number" min="1" max="31" value="${r.day}"></div></div>
+  <label>Account</label><select id="rAc">${accOpts(r.acc,'— koi nahi —')}</select>
+  <label>Note</label><input id="rN" value="${esc(r.note)}" placeholder="Maslan: makan ka kiraya">
+  <label>Kis mahine se shuru</label><input id="rS" type="month" value="${r.start}">
+  ${id?`<div class="switch"><span>Chalu hai</span><button class="tg ${r.off?'':'on'}" id="rOff"></button></div>`:''}
+  <button class="btn full" id="rSv">Save karein</button>
+  ${id?`<button class="btn full light" style="color:var(--red)" id="rX">🗑 Hatayein (purani entries rahengi)</button>`:''}`);
+  $('rI').onclick=()=>{tp='in';r.cat=D.cats.in[0];draw()};$('rO').onclick=()=>{tp='out';r.cat=D.cats.out[0];draw()};
+  if($('rOff'))$('rOff').onclick=e=>{r.off=!r.off;e.target.classList.toggle('on',!r.off)};
+  $('rSv').onclick=()=>{const o={type:tp,cat:$('rC').value,amount:+$('rA').value,day:Math.min(31,Math.max(1,+$('rD').value|0)),acc:$('rAc').value,note:$('rN').value.trim(),start:$('rS').value||ym(new Date())};
+    if(!o.amount)return toast('Raqam likhein');if(id)Object.assign(r,o);else D.recur.push({id:uid(),...o});save();closeM();runRecurring();render()};
+  if(id)$('rX').onclick=()=>{if(confirm('Hatayein?')){D.recur=D.recur.filter(x=>x.id!==id);save();closeM();render()}}};draw()}
+
+/* ================= UDHAAR ================= */
 function vUdhaar(v){
   let lena=0,dena=0;D.people.forEach(p=>{const b=pBal(p.id);if(b>0)lena+=b;else dena-=b});
   const q=udSearch.toLowerCase();
   const ppl=D.people.filter(p=>!q||p.name.toLowerCase().includes(q)||(p.phone||'').includes(q))
-    .map(p=>({...p,bal:pBal(p.id),last:Math.max(0,...D.led.filter(l=>l.pid===p.id).map(l=>l.ts||0))})).sort((a,b)=>b.last-a.last);
+    .map(p=>{const L=D.led.filter(l=>l.pid===p.id);const dues=L.filter(l=>l.due).map(l=>l.due).sort();return{...p,bal:pBal(p.id),last:Math.max(0,...L.map(l=>l.ts||0)),due:dues[dues.length-1]}}).sort((a,b)=>b.last-a.last);
   v.innerHTML=`
   <div class="card"><div class="grid2">
     <div class="stat s-in"><small>Mujhe lene hain</small><b>${rs(lena)}</b></div>
     <div class="stat s-out"><small>Mujhe dene hain</small><b>${rs(dena)}</b></div>
   </div></div>
-  <input class="search" placeholder="🔍 Naam ya number dhoondein" value="${esc(udSearch)}" oninput="udSearch=this.value;render();setTimeout(()=>{const s=document.querySelector('.search');s.focus();s.setSelectionRange(99,99)})">
+  <input class="search" id="uq" placeholder="🔍 Naam ya number dhoondein" value="${esc(udSearch)}">
   <div class="card">
-  ${ppl.length?ppl.map(p=>`<div class="row" onclick="openPerson('${p.id}')"><div class="av">${esc(p.name[0]||'?').toUpperCase()}</div><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">${p.bal>0?'Inse lene hain':p.bal<0?'Inko dene hain':'Hisaab barabar'}</div></div><div class="amt ${p.bal>0?'g':p.bal<0?'r':'m'}">${rs(p.bal)}</div></div>`).join(''):`<div class="empty">Abhi koi shakhs nahi.<br>Neeche <b>+</b> daba kar banda add karein.</div>`}
+  ${ppl.length?ppl.map(p=>{const dd=p.due&&p.bal?dayDiff(p.due):null;return `<div class="row" onclick="openPerson('${p.id}')"><div class="av">${esc(p.name[0]||'?').toUpperCase()}</div><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">${p.bal>0?'Inse lene hain':p.bal<0?'Inko dene hain':'Hisaab barabar'}${dd!==null?` · <span class="${dd<0?'r':dd<=3?'a':''}">wapsi ${fd(p.due)}</span>`:''}</div></div><div class="amt ${p.bal>0?'g':p.bal<0?'r':'m'}">${rs(p.bal)}</div></div>`}).join(''):`<div class="empty">Abhi koi shakhs nahi.<br>Neeche <b>+</b> daba kar banda add karein.</div>`}
   </div>`;
+  let tm;$('uq').oninput=e=>{clearTimeout(tm);tm=setTimeout(()=>{udSearch=e.target.value;render();const s=$('uq');s.focus();s.setSelectionRange(999,999)},300)};
 }
 let curPerson=null;
 function openPerson(id){curPerson=id;go('person')}
 function vPerson(v){
   const p=D.people.find(x=>x.id===curPerson);if(!p)return go('udhaar');
   const b=pBal(p.id), L=D.led.filter(l=>l.pid===p.id).sort((a,c)=>c.date.localeCompare(a.date)||(c.ts||0)-(a.ts||0));
+  const dues=L.filter(l=>l.due).map(l=>l.due).sort(), due=dues[dues.length-1], dd=due&&b?dayDiff(due):null;
   v.innerHTML=`
-  <button class="btn sm light" onclick="go('udhaar')" style="margin-bottom:10px">‹ Wapis</button>
+  <button class="btn sm light" onclick="tab='udhaar';render()" style="margin-bottom:10px">‹ Wapis</button>
   <div class="card" style="text-align:center">
     <div class="av" style="margin:0 auto 8px;width:56px;height:56px;font-size:24px">${esc(p.name[0]||'?').toUpperCase()}</div>
     <div style="font-weight:700;font-size:17px">${esc(p.name)}</div>
     ${p.phone?`<div class="m" style="font-size:13px">${esc(p.phone)}</div>`:''}
     <div class="big ${b>0?'g':b<0?'r':'m'}" style="margin-top:10px">${rs(b)}</div>
     <div class="m" style="font-size:13px">${b>0?'Inse lene hain':b<0?'Inko dene hain':'Hisaab barabar hai'}</div>
+    ${dd!==null?`<div class="pill ${dd<0?'r':''}" style="display:inline-block;margin-top:8px">📅 Wapsi: ${fd(due)} ${dd<0?'('+(-dd)+' din guzar gaye)':dd===0?'(aaj)':'('+dd+' din baqi)'}</div>`:''}
     <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap">
       ${p.phone?`<a class="btn sm light" style="text-decoration:none" href="tel:${esc(p.phone)}">📞 Call</a>`:''}
       ${b!==0?`<button class="btn sm light" onclick="waRemind('${p.id}')">💬 WhatsApp</button>`:''}
@@ -302,14 +585,14 @@ function vPerson(v){
     </div>
   </div>
   <div class="btns2" style="margin-bottom:12px">
-    <button class="btn r" onclick="ledForm('${p.id}','gave')">Maine DIYE<br><small style="font-weight:400">(dena / udhaar diya)</small></button>
+    <button class="btn r" onclick="ledForm('${p.id}','gave')">Maine DIYE<br><small style="font-weight:400">(udhaar diya / wapis kiya)</small></button>
     <button class="btn g" onclick="ledForm('${p.id}','took')">Maine LIYE<br><small style="font-weight:400">(wapis mile / udhaar liya)</small></button>
   </div>
   <div class="card">
     <h3>Poora hisaab</h3>
-    ${L.length?L.map(l=>`<div class="row" onclick="ledForm('${p.id}',null,'${l.id}')"><div class="grow"><div class="t">${l.kind==='gave'?'Maine diye':'Maine liye'}</div><div class="s">${fd(l.date)}${l.note?' · '+esc(l.note):''}</div></div><div class="amt ${l.kind==='gave'?'r':'g'}">${rs(l.amount)}</div></div>`).join(''):'<div class="empty">Koi lena dena nahi likha.</div>'}
+    ${L.length?L.map(l=>`<div class="row" onclick="ledForm('${p.id}',null,'${l.id}')"><div class="grow"><div class="t">${l.kind==='gave'?'Maine diye':'Maine liye'}</div><div class="s">${fd(l.date)}${l.due?' · wapsi '+fd(l.due):''}${l.note?' · '+esc(l.note):''}</div></div><div class="amt ${l.kind==='gave'?'r':'g'}">${rs(l.amount)}</div></div>`).join(''):'<div class="empty">Koi lena dena nahi likha.</div>'}
   </div>
-  <div class="hint">"Maine diye" = aap ne paise diye (unpar baqaya chadhega). "Maine liye" = aap ko paise mile (wapsi ya udhaar).</div>`;
+  <div class="hint">"Maine diye" = aap ne paise diye. "Maine liye" = aap ko paise mile.</div>`;
 }
 function personForm(id){
   const p=id?D.people.find(x=>x.id===id):{name:'',phone:''};
@@ -317,7 +600,8 @@ function personForm(id){
   <label>Naam</label><input id="pName" value="${esc(p.name)}" placeholder="Maslan: Ahmed bhai">
   <label>Mobile number (zaroori nahi)</label><input id="pPh" type="tel" value="${esc(p.phone)}" placeholder="03xx xxxxxxx">
   ${!id?`<label>Shuru ka baqaya (zaroori nahi)</label><input id="pOpen" type="number" inputmode="decimal" placeholder="0">
-  <div class="seg" style="margin-top:8px"><button class="on" id="oL">Mujhe lene hain</button><button id="oD">Mujhe dene hain</button></div>`:''}
+  <div class="seg" style="margin-top:8px"><button class="on" id="oL">Mujhe lene hain</button><button id="oD">Mujhe dene hain</button></div>
+  <label>Wapsi ki tareekh (zaroori nahi)</label><input id="pDue" type="date">`:''}
   <button class="btn full" id="pSave">Save karein</button>
   ${id?`<button class="btn full light" style="color:var(--red)" id="pDel">🗑 Banda aur iska hisaab delete karein</button>`:''}`);
   let ok='gave';
@@ -325,23 +609,25 @@ function personForm(id){
   $('pSave').onclick=()=>{const n=$('pName').value.trim();if(!n)return toast('Naam likhein');
     if(id){p.name=n;p.phone=$('pPh').value.trim()}
     else{const np={id:uid(),name:n,phone:$('pPh').value.trim()};D.people.push(np);const o=+$('pOpen').value;
-      if(o>0)D.led.push({id:uid(),ts:Date.now(),pid:np.id,kind:ok,amount:o,date:today(),note:'Purana baqaya'});curPerson=np.id}
+      if(o>0)D.led.push({id:uid(),ts:Date.now(),pid:np.id,kind:ok,amount:o,date:today(),note:'Purana baqaya',acc:'',due:$('pDue').value||''});curPerson=np.id}
     save();closeM();toast('Save ho gaya ✓');tab='person';render()};
-  if(id)$('pDel').onclick=()=>{if(confirm(p.name+' aur iska saara hisaab delete karein?')){D.people=D.people.filter(x=>x.id!==id);D.led=D.led.filter(l=>l.pid!==id);save();closeM();go('udhaar')}};
+  if(id)$('pDel').onclick=()=>{if(confirm(p.name+' aur iska saara hisaab delete karein?')){D.people=D.people.filter(x=>x.id!==id);D.led=D.led.filter(l=>l.pid!==id);save();closeM();tab='udhaar';render()}};
   setTimeout(()=>$('pName').focus(),150);
 }
 function ledForm(pid,kind,id){
-  const l=id?D.led.find(x=>x.id===id):{kind,amount:'',date:today(),note:''};
+  const l=id?D.led.find(x=>x.id===id):{kind,amount:'',date:today(),note:'',acc:'cash',due:''};
   const k=l.kind;
   sheet(`<h2 class="${k==='gave'?'r':'g'}">${k==='gave'?'Maine diye':'Maine liye'}<button class="x" onclick="closeM()">✕</button></h2>
   <div class="m" style="font-size:13px">${esc(D.people.find(p=>p.id===pid).name)}</div>
   <label>Raqam (Rs)</label><input id="lAmt" type="number" inputmode="decimal" value="${l.amount}" placeholder="0">
+  <label>${k==='gave'?'Kis se diye':'Kahan aaye'}</label><select id="lAcc">${accOpts(l.acc,'— account mein na ginein —')}</select>
   <label>Tareekh</label><input id="lDate" type="date" value="${l.date}">
+  <label>📅 Wapsi ki tareekh (zaroori nahi)</label><input id="lDue" type="date" value="${l.due||''}">
   <label>Note (zaroori nahi)</label><input id="lNote" value="${esc(l.note)}" placeholder="Maslan: shaadi ke liye">
   <button class="btn full ${k==='gave'?'r':'g'}" id="lSave">Save karein</button>
   ${id?`<button class="btn full light" style="color:var(--red)" id="lDel">🗑 Delete karein</button>`:''}`);
   $('lSave').onclick=()=>{const a=+$('lAmt').value;if(!a||a<=0)return toast('Raqam likhein');
-    const o={amount:a,date:$('lDate').value||today(),note:$('lNote').value.trim()};
+    const o={amount:a,date:$('lDate').value||today(),note:$('lNote').value.trim(),acc:$('lAcc').value,due:$('lDue').value||''};
     if(id)Object.assign(l,o);else D.led.push({id:uid(),ts:Date.now(),pid,kind:k,...o});
     save();closeM();toast('Save ho gaya ✓');render()};
   if(id)$('lDel').onclick=()=>{if(confirm('Delete karein?')){D.led=D.led.filter(x=>x.id!==id);save();closeM();render()}};
@@ -349,8 +635,8 @@ function ledForm(pid,kind,id){
 }
 function waRemind(pid){const p=D.people.find(x=>x.id===pid),b=pBal(pid);
   const msg=b>0?`Assalam o Alaikum ${p.name}, aap ki taraf mera ${rs(b)} baqi hai. Meharbani kar ke yaad rakhiye ga. Shukriya`:`Assalam o Alaikum ${p.name}, mujhe aap ko ${rs(b)} dene hain. InshaAllah jald ada kar dunga.`;
-  let ph=(p.phone||'').replace(/\D/g,'');if(ph.startsWith('0'))ph='92'+ph.slice(1);
-  window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(msg),'_blank')}
+  waOpen(p.phone,msg)}
+function waOpen(phone,msg){let ph=(phone||'').replace(/\D/g,'');if(ph.startsWith('0'))ph='92'+ph.slice(1);window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(msg),'_blank')}
 
 /* ================= COMMITTEE ================= */
 function cActive(c,m){const end=addM(c.start,c.members-1);return m>=c.start&&m<=end}
@@ -368,22 +654,23 @@ function vCommittee(v){
         <div class="stat s-out"><small>Ada ki (${paidN}/${c.members})</small><b>${rs(paidN*c.amount)}</b></div>
         <div class="stat s-in"><small>Meri baari: ${mLabel(myM)}</small><b>${c.received?'Mil gayi ✓':'Baqi'}</b></div>
       </div>
-      <div class="hint">${mNo<1?'Abhi shuru nahi hui':mNo>c.members?'Committee mukammal ho gayi':'Abhi mahina '+mNo+' / '+c.members+' chal raha hai'} · Qist pe tap karein = ada ✓</div>
+      <div class="hint">${mNo<1?'Abhi shuru nahi hui':mNo>c.members?'Committee mukammal ho gayi':'Abhi mahina '+mNo+' / '+c.members+' chal raha hai'} · Mahine pe tap = qist ada ✓</div>
       <div class="months">${months.map(m=>`<button class="${(c.paid||{})[m]?'on':''} ${m===myM?'me':''}" onclick="toggleComPay('${c.id}','${m}')">${MN[+m.split('-')[1]-1]} ${m.slice(2,4)}${(c.paid||{})[m]?' ✓':''}</button>`).join('')}</div>
       <button class="btn full ${c.received?'light':'g'}" onclick="toggleComRecv('${c.id}')">${c.received?'↩ "Mil gayi" wapis lein':'🎉 Committee mil gayi ('+rs(totalPay)+')'}</button>
     </div>`}).join('')+'<div class="hint" style="text-align:center">Peeli line wala mahina = aap ki baari</div>':`<div class="card empty">Koi committee nahi.<br>Neeche <b>+</b> daba kar committee add karein.</div>`;
 }
 function committeeForm(id){
-  const c=id?D.committees.find(x=>x.id===id):{name:'',amount:'',members:10,myTurn:1,start:ym(new Date())};
+  const c=id?D.committees.find(x=>x.id===id):{name:'',amount:'',members:10,myTurn:1,start:ym(new Date()),acc:'cash'};
   sheet(`<h2>${id?'Committee badlein':'Nayi committee'}<button class="x" onclick="closeM()">✕</button></h2>
   <label>Committee ka naam</label><input id="cN" value="${esc(c.name)}" placeholder="Maslan: Mohalla committee">
   <label>Mahana qist (Rs)</label><input id="cA" type="number" inputmode="decimal" value="${c.amount}">
   <div class="grid2"><div><label>Kitne members / mahine</label><input id="cM" type="number" inputmode="numeric" value="${c.members}"></div>
   <div><label>Meri baari (number)</label><input id="cT" type="number" inputmode="numeric" value="${c.myTurn}"></div></div>
   <label>Shuru ka mahina</label><input id="cS" type="month" value="${c.start}">
+  <label>Qist kis se deta hun</label><select id="cAc">${accOpts(c.acc,'— koi nahi —')}</select>
   <button class="btn full" id="cSave">Save karein</button>
   ${id?`<button class="btn full light" style="color:var(--red)" id="cDel">🗑 Committee delete karein</button>`:''}`);
-  $('cSave').onclick=()=>{const o={name:$('cN').value.trim(),amount:+$('cA').value,members:Math.max(1,+$('cM').value|0),myTurn:Math.max(1,+$('cT').value|0),start:$('cS').value||ym(new Date())};
+  $('cSave').onclick=()=>{const o={name:$('cN').value.trim(),amount:+$('cA').value,members:Math.max(1,+$('cM').value|0),myTurn:Math.max(1,+$('cT').value|0),start:$('cS').value||ym(new Date()),acc:$('cAc').value};
     if(!o.name)return toast('Naam likhein');if(!o.amount)return toast('Qist likhein');if(o.myTurn>o.members)return toast('Baari members se zyada nahi ho sakti');
     if(id)Object.assign(c,o);else D.committees.push({id:uid(),paid:{},received:false,...o});
     save();closeM();toast('Save ho gaya ✓');render()};
@@ -392,11 +679,11 @@ function committeeForm(id){
 function toggleComPay(id,m){const c=D.committees.find(x=>x.id===id);c.paid=c.paid||{};
   if(c.paid[m]){if(!confirm(mLabel(m)+' ki qist "ada nahi" karein? Kharche ki entry bhi hat jayegi.'))return;
     D.tx=D.tx.filter(t=>t.id!==c.paid[m]);delete c.paid[m]}
-  else{const t={id:uid(),ts:Date.now(),type:'out',cat:'Committee Qist',amount:c.amount,date:m===ym(new Date())?today():m+'-01',note:c.name+' qist'};D.tx.push(t);c.paid[m]=t.id;toast('Qist ada ✓ (kharche mein likh di)')}
+  else{const t={id:uid(),ts:Date.now(),type:'out',cat:'Committee Qist',amount:c.amount,acc:c.acc??'cash',date:m===ym(new Date())?today():m+'-01',note:c.name+' qist'};D.tx.push(t);c.paid[m]=t.id;toast('Qist ada ✓ (kharche mein likh di)')}
   save();render()}
 function toggleComRecv(id){const c=D.committees.find(x=>x.id===id);
   if(c.received){if(!confirm('"Mil gayi" wapis lein? Aamdani entry bhi hat jayegi.'))return;D.tx=D.tx.filter(t=>t.id!==c.recvTx);c.received=false;c.recvTx=null}
-  else{const t={id:uid(),ts:Date.now(),type:'in',cat:'Committee Mili',amount:c.amount*c.members,date:today(),note:c.name};D.tx.push(t);c.received=true;c.recvTx=t.id;toast('Mubarak ho! Aamdani mein likh di ✓')}
+  else{const t={id:uid(),ts:Date.now(),type:'in',cat:'Committee Mili',amount:c.amount*c.members,acc:c.acc??'cash',date:today(),note:c.name};D.tx.push(t);c.received=true;c.recvTx=t.id;toast('Mubarak ho! Aamdani mein likh di ✓')}
   save();render()}
 
 /* ================= BILLS ================= */
@@ -406,78 +693,133 @@ function vBills(v){
   v.innerHTML=`
   <div class="card"><div class="grid2">
     <div class="stat s-in"><small>Ada ho gaye</small><b>${done.length} / ${D.bills.length}</b></div>
-    <div class="stat s-out"><small>Bills pe kharch</small><b>${rs(amtPaid)}</b></div>
+    <div class="stat s-out"><small>Bills mein diye</small><b>${rs(amtPaid)}</b></div>
   </div></div>
   <div class="card">
     <h3>${mLabel(cur)} ke bills</h3>
-    ${D.bills.length?D.bills.map(b=>{const tx=D.tx.find(t=>t.id===paid[b.id]);return `<div class="row">
+    ${D.bills.length?D.bills.map(b=>{const tx=D.tx.find(t=>t.id===paid[b.id]);const dd=!tx&&b.due&&cur===ym(new Date())?dayDiff(mDate(cur,b.due)):null;return `<div class="row">
       <button class="chk ${tx?'on':''}" onclick="${tx?`unpayBill('${b.id}')`:`payBill('${b.id}')`}">${tx?'✓':''}</button>
-      <div class="grow" onclick="billForm('${b.id}')"><div class="t">${CAT_ICON[b.cat]||'🧾'} ${esc(b.name)}</div><div class="s">${tx?'Ada: '+fd(tx.date):'Akhri tareekh: '+(b.due||'-')+' tareekh'}</div></div>
-      <div class="amt ${tx?'g':'m'}">${tx?rs(tx.amount):b.amount?'~'+rs(b.amount):''}</div></div>`}).join(''):'<div class="empty">Koi bill nahi. + dabayein.</div>'}
+      <div class="grow" onclick="billForm('${b.id}')"><div class="t">${b.card?'💳':CAT_ICON[b.cat]||'🧾'} ${esc(b.name)}</div><div class="s ${dd!==null&&dd<0?'r':dd!==null&&dd<=3?'a':''}">${tx?'Ada: '+fd(tx.date):'Akhri tareekh: '+(b.due||'-')+(dd!==null&&dd<0?' (guzar gayi!)':'')}</div></div>
+      <div class="amt ${tx?'g':'m'}">${tx?rs(tx.amount):b.card?rs(Math.max(0,-accBal(b.card))):b.amount?'~'+rs(b.amount):''}</div></div>`}).join(''):'<div class="empty">Koi bill nahi. + dabayein.</div>'}
   </div>
-  <div class="hint">Dabba tick karein = bill ada (raqam kharche mein khud likh jayegi). Naam pe tap = bill edit.</div>`;
+  <div class="hint">Dabba tick karein = bill ada. Naam pe tap = bill edit. Credit card bill ada karne se kharcha dobara nahi ginta (sirf transfer).</div>`;
 }
 function billForm(id){
-  const b=id?D.bills.find(x=>x.id===id):{name:'',cat:'Bijli',amount:'',due:10};
+  const b=id?D.bills.find(x=>x.id===id):{name:'',cat:'Bijli',amount:'',due:10,card:''};
+  const cards=D.accs.filter(a=>a.type==='card');
   sheet(`<h2>${id?'Bill badlein':'Naya bill'}<button class="x" onclick="closeM()">✕</button></h2>
   <label>Bill ka naam</label><input id="bN" value="${esc(b.name)}" placeholder="Maslan: K-Electric">
+  ${cards.length?`<label>Ye credit card ka bill hai?</label><select id="bCard"><option value="">Nahi — aam bill</option>${cards.map(a=>`<option value="${a.id}" ${b.card===a.id?'selected':''}>💳 ${esc(a.name)}</option>`).join('')}</select>`:''}
   <label>Category</label><select id="bC">${D.cats.out.map(c=>`<option ${c===b.cat?'selected':''}>${esc(c)}</option>`).join('')}</select>
   <div class="grid2"><div><label>Aam raqam (andaza)</label><input id="bA" type="number" inputmode="decimal" value="${b.amount||''}"></div>
   <div><label>Akhri tareekh (din)</label><input id="bD" type="number" inputmode="numeric" value="${b.due||''}"></div></div>
   <button class="btn full" id="bSave">Save karein</button>
   ${id?`<button class="btn full light" style="color:var(--red)" id="bDel">🗑 Bill list se hatayein</button>`:''}`);
-  $('bSave').onclick=()=>{const o={name:$('bN').value.trim(),cat:$('bC').value,amount:+$('bA').value||0,due:+$('bD').value||''};if(!o.name)return toast('Naam likhein');
+  $('bSave').onclick=()=>{const o={name:$('bN').value.trim(),cat:$('bC').value,amount:+$('bA').value||0,due:+$('bD').value||'',card:$('bCard')?$('bCard').value:''};if(!o.name)return toast('Naam likhein');
     if(id)Object.assign(b,o);else D.bills.push({id:uid(),...o});save();closeM();render()};
   if(id)$('bDel').onclick=()=>{if(confirm('Ye bill list se hatayein? (Purani entries rahengi)')){D.bills=D.bills.filter(x=>x.id!==id);save();closeM();render()}};
 }
-function payBill(id){const b=D.bills.find(x=>x.id===id);
+function payBill(id){const b=D.bills.find(x=>x.id===id);const card=b.card&&D.accs.find(a=>a.id===b.card);
+  const owed=card?Math.max(0,-accBal(card.id)):0;
   sheet(`<h2>${esc(b.name)} ada<button class="x" onclick="closeM()">✕</button></h2>
-  <div class="m" style="font-size:13px">${mLabel(cur)}</div>
-  <label>Kitna bill aaya / diya (Rs)</label><input id="pyA" type="number" inputmode="decimal" value="${b.amount||''}">
-  <label>Tareekh</label><input id="pyD" type="date" value="${cur===ym(new Date())?today():cur+'-'+String(Math.min(28,b.due||1)).padStart(2,'0')}">
+  <div class="m" style="font-size:13px">${mLabel(cur)}${card?' · card par baqaya '+rs(owed):''}</div>
+  <label>Kitna diya (Rs)</label><input id="pyA" type="number" inputmode="decimal" value="${card?(owed||''):(b.amount||'')}">
+  <label>Kis se diya</label><select id="pyAc">${D.accs.filter(a=>!card||a.id!==card.id).map(a=>`<option value="${a.id}" ${a.id===(D.set.defAcc||'cash')?'selected':''}>${ACC_ICON[a.type]} ${esc(a.name)}</option>`).join('')}${card?'':'<option value="">— koi account nahi —</option>'}</select>
+  <label>Tareekh</label><input id="pyD" type="date" value="${cur===ym(new Date())?today():mDate(cur,b.due||1)}">
   <button class="btn full g" id="pyS">✓ Ada ho gaya</button>`);
   $('pyS').onclick=()=>{const a=+$('pyA').value;if(!a)return toast('Raqam likhein');
-    const t={id:uid(),ts:Date.now(),type:'out',cat:b.cat,amount:a,date:$('pyD').value||today(),note:b.name};D.tx.push(t);
-    (D.billPaid[cur]=D.billPaid[cur]||{})[id]=t.id;save();closeM();toast('Bill ada ✓');render()};
+    const t=card?{id:uid(),ts:Date.now(),type:'tr',cat:'Transfer',from:$('pyAc').value,to:card.id,amount:a,date:$('pyD').value||today(),note:b.name}
+                :{id:uid(),ts:Date.now(),type:'out',cat:b.cat,amount:a,acc:$('pyAc').value,date:$('pyD').value||today(),note:b.name};
+    D.tx.push(t);(D.billPaid[cur]=D.billPaid[cur]||{})[id]=t.id;save();closeM();toast('Bill ada ✓');render()};
   setTimeout(()=>$('pyA').focus(),150)}
-function unpayBill(id){if(!confirm('Bill "ada nahi" karein? Kharche ki entry bhi hat jayegi.'))return;
+function unpayBill(id){if(!confirm('Bill "ada nahi" karein? Entry bhi hat jayegi.'))return;
   const tid=(D.billPaid[cur]||{})[id];D.tx=D.tx.filter(t=>t.id!==tid);delete D.billPaid[cur][id];save();render()}
 
 /* ================= REPORT ================= */
+function monthSummary(m){const tx=monthTx(m),inc=sum(tx.filter(t=>t.type==='in'),t=>t.amount),out=sum(tx.filter(t=>t.type==='out'),t=>t.amount);
+  const g={};tx.filter(t=>t.type==='out').forEach(t=>g[t.cat]=(g[t.cat]||0)+ +t.amount);return{inc,out,cats:Object.entries(g).sort((a,b)=>b[1]-a[1])}}
 function vReport(v){
-  const tx=monthTx(cur), inc=sum(tx.filter(t=>t.type==='in'),t=>t.amount), out=sum(tx.filter(t=>t.type==='out'),t=>t.amount);
-  const grp=type=>{const g={};tx.filter(t=>t.type===type).forEach(t=>g[t.cat]=(g[t.cat]||0)+ +t.amount);return Object.entries(g).sort((a,b)=>b[1]-a[1])};
-  const last6=[];for(let i=5;i>=0;i--){const m=addM(cur,-i),t=monthTx(m);last6.push([m,sum(t.filter(x=>x.type==='in'),x=>x.amount),sum(t.filter(x=>x.type==='out'),x=>x.amount)])}
+  const {inc,out,cats}=monthSummary(cur), tx=monthTx(cur);
+  const gi={};tx.filter(t=>t.type==='in').forEach(t=>gi[t.cat]=(gi[t.cat]||0)+ +t.amount);
+  const last6=[];for(let i=5;i>=0;i--){const m=addM(cur,-i),s=monthSummary(m);last6.push([m,s.inc,s.out])}
   const mx=Math.max(1,...last6.map(x=>Math.max(x[1],x[2])));
   const yr=cur.slice(0,4), yt=D.tx.filter(t=>t.date.startsWith(yr));
+  let lena=0,dena=0;D.people.forEach(p=>{const b=pBal(p.id);if(b>0)lena+=b;else dena-=b});
   v.innerHTML=`
-  <button class="btn sm light" onclick="go('home')" style="margin-bottom:10px">‹ Wapis</button>
-  <div class="card"><h3>${mLabel(cur)} ka khulasa</h3><div class="grid2">
+  <div class="noprint" style="display:flex;gap:8px;margin-bottom:10px"><button class="btn sm light" onclick="back()">‹ Wapis</button><span style="flex:1"></span>
+    <button class="btn sm g" onclick="shareWA()">💬 WhatsApp</button><button class="btn sm light" onclick="window.print()">📄 PDF</button></div>
+  <div class="card"><h3>${esc(D.set.name||'Mera Khata')} — ${mLabel(cur)}</h3><div class="grid2">
     <div class="stat s-in"><small>Aamdani</small><b>${rs(inc)}</b></div><div class="stat s-out"><small>Kharcha</small><b>${rs(out)}</b></div></div>
-    <div class="stat s-bal" style="margin-top:10px"><small>Bachat</small><b>${inc-out<0?'− ':''}${rs(inc-out)}</b></div></div>
-  <div class="card"><h3>⬆ Kharcha category wise</h3>${grp('out').map(([c,a])=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${CAT_ICON[c]||'•'} ${esc(c)}</span><b>${rs(a)} <span class="m" style="font-weight:400">${Math.round(a/out*100)}%</span></b></div><div class="bar"><i style="width:${a/out*100}%;background:var(--red)"></i></div></div>`).join('')||'<div class="empty">Koi kharcha nahi</div>'}</div>
-  <div class="card"><h3>⬇ Aamdani category wise</h3>${grp('in').map(([c,a])=>`<div class="row"><div class="grow">${CAT_ICON[c]||'•'} ${esc(c)}</div><b class="g">${rs(a)}</b></div>`).join('')||'<div class="empty">Koi aamdani nahi</div>'}</div>
+    <div class="grid2" style="margin-top:10px"><div class="stat s-bal"><small>Bachat</small><b>${srs(inc-out)}</b></div><div class="stat s-mut"><small>Lene / Dene</small><b style="font-size:15px"><span class="g">${rs(lena)}</span> / <span class="r">${rs(dena)}</span></b></div></div></div>
+  <div class="card"><h3>⬆ Kharcha category wise</h3>${cats.map(([c,a])=>{const l=+D.budgets[c]||0;return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${CAT_ICON[c]||'•'} ${esc(c)}</span><b>${rs(a)} <span class="m" style="font-weight:400">${Math.round(a/out*100)}%${l?' · budget '+rs(l):''}</span></b></div><div class="bar"><i style="width:${a/out*100}%;background:${l&&a>l?'var(--red)':'var(--pri)'}"></i></div></div>`}).join('')||'<div class="empty">Koi kharcha nahi</div>'}</div>
+  <div class="card"><h3>⬇ Aamdani category wise</h3>${Object.entries(gi).map(([c,a])=>`<div class="row"><div class="grow">${CAT_ICON[c]||'•'} ${esc(c)}</div><b class="g">${rs(a)}</b></div>`).join('')||'<div class="empty">Koi aamdani nahi</div>'}</div>
   <div class="card"><h3>📈 Pichle 6 mahine</h3>
     <div style="display:flex;align-items:flex-end;gap:8px;height:140px;padding-top:10px">${last6.map(([m,i,o])=>`<div style="flex:1;text-align:center"><div style="display:flex;gap:3px;align-items:flex-end;justify-content:center;height:110px"><div style="width:40%;background:var(--green);border-radius:4px 4px 0 0;height:${i/mx*100}%"></div><div style="width:40%;background:var(--red);border-radius:4px 4px 0 0;height:${o/mx*100}%"></div></div><div class="m" style="font-size:11px;margin-top:4px">${MN[+m.split('-')[1]-1]}</div></div>`).join('')}</div>
     <div class="hint"><span class="g">■</span> Aamdani &nbsp; <span class="r">■</span> Kharcha</div></div>
   <div class="card"><h3>📅 Saal ${yr}</h3><div class="grid2">
     <div class="stat s-in"><small>Kul aamdani</small><b>${rs(sum(yt.filter(t=>t.type==='in'),t=>t.amount))}</b></div>
     <div class="stat s-out"><small>Kul kharcha</small><b>${rs(sum(yt.filter(t=>t.type==='out'),t=>t.amount))}</b></div></div></div>
-  <button class="btn full light" onclick="exportCSV()">⬇ Is mahine ka Excel (CSV) download</button>`;
+  <button class="btn full light noprint" onclick="exportCSV()">⬇ Is mahine ka Excel (CSV) download</button>`;
+}
+function shareWA(){const {inc,out,cats}=monthSummary(cur);
+  let lena=0,dena=0;D.people.forEach(p=>{const b=pBal(p.id);if(b>0)lena+=b;else dena-=b});
+  const msg=`*${D.set.name||'Mera Khata'} — ${mLabel(cur)}*\n\n⬇ Aamdani: ${rs(inc)}\n⬆ Kharcha: ${rs(out)}\n💰 Bachat: ${srs(inc-out)}\n\n*Kharcha:*\n${cats.map(([c,a],i)=>`${i+1}. ${c}: ${rs(a)}`).join('\n')||'-'}\n\n🤝 Lene hain: ${rs(lena)}\n🤝 Dene hain: ${rs(dena)}`;
+  waOpen('',msg)}
+
+/* ================= ZAKAT ================= */
+function vZakat(v){
+  const z=D.zakat;let lena=0,dena=0;D.people.forEach(p=>{const b=pBal(p.id);if(b>0)lena+=b;else dena-=b});
+  const cash=sum(D.accs.filter(a=>a.type!=='card'),a=>Math.max(0,accBal(a.id))), card=Math.max(0,-sum(D.accs.filter(a=>a.type==='card'),a=>accBal(a.id)));
+  const f=(k,l,def,h)=>`<label>${l}</label><input class="zIn" data-k="${k}" type="number" inputmode="decimal" value="${z[k]??def??''}">${h?`<div class="hint">${h}</div>`:''}`;
+  v.innerHTML=`<button class="btn sm light" onclick="back()" style="margin-bottom:10px">‹ Wapis</button>
+  <div class="card"><h3>🤲 Zakat ka hisaab</h3>
+  <div class="hint">Aaj ke rate khud likhein (sunar / akhbar se). Ye sirf andaza hai, mukammal masla apne alim se poochein.</div>
+  <div class="grid2">${f('goldRate','Sone ka rate (1 tola)','')}${f('silverRate','Chandi ka rate (1 tola)','')}</div>
+  <div class="grid2">${f('gold','Sona (tola)','')}${f('silver','Chandi (tola)','')}</div>
+  ${f('cash','Cash + bank (Rs)',Math.round(cash),'App se: '+rs(cash))}
+  ${f('recv','Jo lene hain (wapas milne ki umeed)',Math.round(lena),'App se: '+rs(lena))}
+  ${f('biz','Karobar ka maal / sale ke liye cheezein (Rs)','')}
+  ${f('debt','Jo dene hain + card baqaya (Rs)',Math.round(dena+card),'App se: '+rs(dena+card))}
+  <div class="switch" style="margin-top:8px"><span style="font-size:14px">Nisab chandi se (52.5 tola) — aksar ulama ki raye</span><button class="tg ${z.nisabGold?'':'on'}" id="zN"></button></div>
+  <button class="btn full" id="zCalc">Hisaab lagayein</button>
+  <div id="zRes"></div></div>`;
+  $('zN').onclick=e=>{z.nisabGold=!z.nisabGold;e.target.classList.toggle('on',!z.nisabGold)};
+  $('zCalc').onclick=()=>{document.querySelectorAll('.zIn').forEach(i=>z[i.dataset.k]=i.value===''?'':+i.value);save();
+    const gr=+z.goldRate||0,sr=+z.silverRate||0;
+    const total=(+z.gold||0)*gr+(+z.silver||0)*sr+(+z.cash||0)+(+z.recv||0)+(+z.biz||0)-(+z.debt||0);
+    const nisab=z.nisabGold?7.5*gr:52.5*sr;
+    if(!nisab){$('zRes').innerHTML='<div class="alert">Nisab ke liye '+(z.nisabGold?'sone':'chandi')+' ka rate likhein</div>';return}
+    const due=total>=nisab?total*.025:0;
+    $('zRes').innerHTML=`<div class="grid2" style="margin-top:12px"><div class="stat s-bal"><small>Kul zakat wala maal</small><b>${srs(total)}</b></div><div class="stat s-mut"><small>Nisab</small><b>${rs(nisab)}</b></div></div>
+    <div class="stat ${due?'s-in':'s-mut'}" style="margin-top:10px;text-align:center"><small>${due?'Aap par zakat (2.5%)':'Maal nisab se kam hai — zakat farz nahi'}</small><b style="font-size:26px">${rs(due)}</b></div>
+    ${due?`<button class="btn full g" onclick="txForm('out');setTimeout(()=>{$('fAmt').value=${Math.round(due)};document.querySelector('[data-c=\\'Zakat/Sadqa\\']')?.click()},300)">Zakat ada ki — kharche mein likhein</button>`:''}`};
 }
 
 /* ================= MORE / SETTINGS ================= */
 function vMore(v){
   const last=localStorage.getItem(KEY+'_lastbackup');
   v.innerHTML=`
-  <div class="card"><h3>📊 Report</h3><button class="btn full light" style="margin-top:0" onclick="go('report')">Mahana report dekhein</button></div>
-  <div class="card"><h3>👤 App ka naam</h3><input id="sName" value="${esc(D.set.name||'')}" placeholder="Mera Khata"><button class="btn full" onclick="D.set.name=$('sName').value.trim()||'Mera Khata';save();toast('Save ✓');render()">Save</button></div>
+  <div class="menu" style="margin-bottom:12px">
+    <button onclick="go('report')"><span>📊</span>Report / PDF</button>
+    <button onclick="go('accounts')"><span>💰</span>Accounts / Card</button>
+    <button onclick="go('budget')"><span>🎯</span>Budget</button>
+    <button onclick="go('goals')"><span>⭐</span>Bachat goal</button>
+    <button onclick="go('recur')"><span>🔄</span>Har mahine wali</button>
+    <button onclick="go('zakat')"><span>🤲</span>Zakat</button>
+  </div>
+  ${cloudCard()}
+  <div class="card"><h3>⚙️ Settings</h3>
+    <div class="switch"><span>🌙 Dark mode</span><button class="tg ${D.set.dark?'on':''}" onclick="D.set.dark=!D.set.dark;save();render()"></button></div>
+    <div class="switch"><span>🔔 Notification (bill / udhaar)</span><button class="tg ${D.set.notif?'on':''}" onclick="toggleNotif()"></button></div>
+    <label>🎤 Awaz ki zuban</label><select onchange="D.set.vlang=this.value;save()"><option value="en-IN" ${(D.set.vlang||'en-IN')==='en-IN'?'selected':''}>Roman (Ration 4500)</option><option value="ur-PK" ${D.set.vlang==='ur-PK'?'selected':''}>اردو</option></select>
+    <label>App ka naam</label><div style="display:flex;gap:8px"><input id="sName" value="${esc(D.set.name||'')}" placeholder="Mera Khata"><button class="btn" onclick="D.set.name=$('sName').value.trim()||'Mera Khata';save();toast('Save ✓');render()">Save</button></div>
+  </div>
   <div class="card"><h3>🔒 PIN lock</h3>
-    <div class="m" style="font-size:13px">${D.set.pin?'PIN laga hua hai. App kholte waqt PIN maanga jayega.':'Abhi koi PIN nahi.'}</div>
+    <div class="m" style="font-size:13px">${D.set.pin?'PIN laga hua hai.':'Abhi koi PIN nahi.'}</div>
     <input id="sPin" type="password" inputmode="numeric" maxlength="6" placeholder="Naya 4 digit PIN" style="margin-top:10px">
     <div class="btns2" style="margin-top:10px"><button class="btn" onclick="setPin()">PIN lagayein</button>${D.set.pin?`<button class="btn light" style="color:var(--red)" onclick="if(confirm('PIN hata dein?')){D.set.pin='';save();render()}">PIN hatayein</button>`:''}</div></div>
-  <div class="card"><h3>💾 Backup (bahut zaroori)</h3>
-    <div class="m" style="font-size:13px">Saara data isi phone mein hai. Har hafte backup file download kar ke WhatsApp/Google Drive pe rakh lein, taake phone kharab ho to data wapis aa sake.${last?'<br>Akhri backup: '+new Date(last).toLocaleString():''}</div>
+  <div class="card"><h3>💾 Backup file</h3>
+    <div class="m" style="font-size:13px">Ek extra hifazat. Mahine mein ek dafa download kar ke Google Drive par rakh lein.${last?'<br>Akhri backup: '+new Date(last).toLocaleString():''}</div>
     <button class="btn full g" onclick="backup()">⬇ Backup download karein</button>
     <button class="btn full light" onclick="$('restoreF').click()">⬆ Backup se data wapis layein</button>
     <input type="file" id="restoreF" accept=".json,application/json" style="display:none" onchange="restore(this)">
@@ -488,35 +830,92 @@ function vMore(v){
     <div class="m" style="font-size:13px;margin:12px 0 8px">Aamdani</div>
     <div class="chips">${D.cats.in.map((c,i)=>`<button class="chip" onclick="delCat('in',${i})">${esc(c)} ✕</button>`).join('')}<button class="chip on" onclick="addCat('in')">＋</button></div>
   </div>
-  <div class="card"><h3 class="r">⚠️ Sab data mitayein</h3><button class="btn full r" onclick="wipe()">Saara data delete karein</button></div>
-  <div class="hint" style="text-align:center">Mera Khata · data sirf aap ke phone mein</div>`;
+  <div class="card"><h3 class="r">⚠️ Sab data mitayein</h3><button class="btn full r" onclick="wipe()">Saara data delete karein</button></div>`;
 }
+function toggleNotif(){
+  if(D.set.notif){D.set.notif=false;save();return render()}
+  if(!('Notification' in window))return alert('Is phone/browser mein notification nahi chalti');
+  Notification.requestPermission().then(p=>{if(p==='granted'){D.set.notif=true;save();localStorage.removeItem('khata_notif_day');notifyOnce();toast('Notification on ✓')}else toast('Ijazat nahi mili');render()})}
 function addCat(t){const n=prompt('Nayi category:');if(n&&n.trim()){D.cats[t].push(n.trim());save();render()}}
 function delCat(t,i){if(confirm('"'+D.cats[t][i]+'" category list se hatayein? (Purani entries rahengi)')){D.cats[t].splice(i,1);save();render()}}
 function setPin(){const p=$('sPin').value.trim();if(!/^\d{4,6}$/.test(p))return toast('4 se 6 number ka PIN');D.set.pin=p;save();toast('PIN lag gaya ✓');render()}
 function backup(){const blob=new Blob([JSON.stringify(D,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='khata-backup-'+today()+'.json';a.click();localStorage.setItem(KEY+'_lastbackup',new Date().toISOString());toast('Backup download ✓');setTimeout(render,300)}
-function restore(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.tx)throw 0;if(!confirm('Abhi wala data hata kar backup wala data lagayein?'))return;D=d;D.cats=D.cats||DEF_CATS;D.set=D.set||{};D.billPaid=D.billPaid||{};save();toast('Data wapis aa gaya ✓');go('home')}catch(e){alert('Ye sahi backup file nahi hai')}};r.readAsText(f);inp.value=''}
-function wipe(){if(confirm('Kya aap waqai SAARA data delete karna chahte hain?')&&prompt('Pakka karne ke liye DELETE likhein')==='DELETE'){D=blank();save();go('home')}}
+function restore(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.tx)throw 0;if(!confirm('Abhi wala data hata kar backup wala data lagayein?'))return;D=migrate(d);save();toast('Data wapis aa gaya ✓');tab='home';render()}catch(e){alert('Ye sahi backup file nahi hai')}};r.readAsText(f);inp.value=''}
+function wipe(){if(confirm('Kya aap waqai SAARA data delete karna chahte hain?')&&prompt('Pakka karne ke liye DELETE likhein')==='DELETE'){D=blank();save();tab='home';render()}}
 function exportCSV(){const tx=monthTx(cur).sort((a,b)=>a.date.localeCompare(b.date));
-  const rows=[['Tareekh','Qisam','Category','Raqam','Note']].concat(tx.map(t=>[t.date,t.type==='in'?'Aamdani':'Kharcha',t.cat,t.amount,t.note||'']));
-  const csv='﻿'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const rows=[['Tareekh','Qisam','Category','Raqam','Account','Note']].concat(tx.map(t=>[t.date,t.type==='in'?'Aamdani':t.type==='out'?'Kharcha':'Transfer',t.type==='tr'?accName(t.from)+' -> '+accName(t.to):t.cat,t.amount,accName(t.acc),t.note||'']));
+  const csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='khata-'+cur+'.csv';a.click()}
 
-/* ================= MODAL ================= */
-function sheet(html){$('modal').innerHTML=`<div class="sheet-bg" onclick="if(event.target===this)closeM()"><div class="sheet">${html}</div></div>`}
-function closeM(){$('modal').innerHTML=''}
+/* ================= CLOUD (Supabase) ================= */
+const CFG=window.KHATA_CFG||{};
+let sb=null, user=null, cloud={st:'off',timer:null,dirty:false};
+function cloudOn(){return !!(CFG.url&&CFG.key)}
+function setCloud(st){cloud.st=st;const e=$('cloudSt');if(!e)return;e.style.display=cloudOn()&&user?'inline':'none';
+  e.textContent={ok:'☁️ Save',busy:'☁️ …',err:'⚠️ Offline',off:''}[st]||''}
+function cloudCard(){
+  if(!cloudOn())return `<div class="card"><h3>☁️ Online backup</h3><div class="m" style="font-size:13px">Abhi band hai — data sirf is phone mein hai. (config.js mein Supabase lagana hai)</div></div>`;
+  return `<div class="card"><h3>☁️ Online account <span class="pill ${cloud.st==='ok'?'g':'r'}">${cloud.st==='ok'?'Sab save ✓':cloud.st==='busy'?'Save ho raha…':'Internet nahi'}</span></h3>
+  <div class="m" style="font-size:13px">${user?esc(user.email):''}<br>Data online mehfooz hai. Naya phone ho to isi email/password se login karein, sab wapis aa jayega. (Photos sirf isi phone mein rehti hain)</div>
+  <div class="btns2" style="margin-top:10px"><button class="btn light" onclick="cloudPush(true)">🔄 Abhi sync</button><button class="btn light" style="color:var(--red)" onclick="logout()">Logout</button></div></div>`}
+function cloudPush(now){
+  if(!sb||!user)return;cloud.dirty=true;clearTimeout(cloud.timer);
+  cloud.timer=setTimeout(async()=>{setCloud('busy');
+    const {error}=await sb.from('khata').upsert({user_id:user.id,data:D,updated_at:new Date(D.updated||Date.now()).toISOString()});
+    if(error){setCloud('err');console.warn(error)}else{cloud.dirty=false;setCloud('ok')}
+    if(tab==='more')render()},now?0:1200)}
+async function cloudPull(){
+  setCloud('busy');
+  const {data,error}=await sb.from('khata').select('data,updated_at').eq('user_id',user.id).maybeSingle();
+  if(error){setCloud('err');return}
+  if(data&&data.data&&data.data.tx){
+    const remoteT=new Date(data.updated_at).getTime(), localT=D.updated||0;
+    const localEmpty=!D.tx.length&&!D.people.length&&!D.committees.length;
+    if(remoteT>localT||localEmpty){D=migrate(data.data);save(true);setCloud('ok');render();return}
+  }
+  cloudPush(true)}
+function loginScreen(){
+  const l=document.createElement('div');l.className='lock';l.id='loginBox';
+  l.innerHTML=`<div style="font-size:44px">📒</div><h2 style="margin:8px 0 4px">Mera Khata</h2><div style="opacity:.85;margin-bottom:6px">Apne account se login karein</div>
+  <input id="lgE" type="email" placeholder="Email" autocomplete="username"><input id="lgP" type="password" placeholder="Password" autocomplete="current-password">
+  <button class="btn" style="background:#fff;color:var(--pri);margin-top:14px;width:260px" id="lgB">Login</button><div id="lgErr" style="margin-top:10px;min-height:20px"></div>`;
+  document.body.appendChild(l);
+  $('lgB').onclick=async()=>{$('lgErr').textContent='…';
+    const {data,error}=await sb.auth.signInWithPassword({email:$('lgE').value.trim(),password:$('lgP').value});
+    if(error){$('lgErr').textContent='❌ Email ya password ghalat hai';return}
+    user=data.user;l.remove();await cloudPull();afterLogin()}}
+async function logout(){if(!confirm('Logout karein? (Is phone se data hata diya jayega, online mehfooz rahega)'))return;
+  if(cloud.dirty)await new Promise(r=>{cloudPush(true);setTimeout(r,1500)});
+  await sb.auth.signOut();localStorage.removeItem(KEY);location.reload()}
+window.addEventListener('online',()=>cloud.dirty&&cloudPush(true));
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&cloud.dirty)cloudPush(true);if(document.visibilityState==='visible'&&user)cloudPull()});
 
-/* ================= LOCK ================= */
+/* ================= MODAL / LOCK ================= */
+function sheet(html){$('modal').innerHTML=`<div class="sheet-bg" onclick="if(event.target===this)closeM()"><div class="sheet">${html}</div></div>`}
+function closeM(){$('modal').innerHTML='';if(recog)recog.stop()}
 function lockScreen(){
   const l=document.createElement('div');l.className='lock';
-  l.innerHTML=`<div style="font-size:44px">🔒</div><h2 style="margin:8px 0 0">${esc(D.set.name||'Mera Khata')}</h2><div style="opacity:.85">PIN likhein</div><input id="lockIn" type="password" inputmode="numeric" maxlength="6">`;
+  l.innerHTML=`<div style="font-size:44px">🔒</div><h2 style="margin:8px 0 0">${esc(D.set.name||'Mera Khata')}</h2><div style="opacity:.85">PIN likhein</div><input id="lockIn" class="pin" type="password" inputmode="numeric" maxlength="6">`;
   document.body.appendChild(l);const i=$('lockIn');setTimeout(()=>i.focus(),100);
   i.oninput=()=>{if(i.value===D.set.pin){l.remove()}else if(i.value.length>=D.set.pin.length){i.value='';i.style.outline='3px solid #ff8a8a';setTimeout(()=>i.style.outline='',400)}};
 }
 
 /* ================= START ================= */
-if(D.set.pin)lockScreen();
-render();
+function afterLogin(){setCloud(cloud.st==='busy'?'busy':'ok');if(D.set.pin)lockScreen();runRecurring();render();notifyOnce()}
+async function start(){
+  render();
+  if(cloudOn()){
+    try{
+      await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=res;s.onerror=rej;document.head.appendChild(s)});
+      sb=window.supabase.createClient(CFG.url,CFG.key);
+      const {data}=await sb.auth.getSession();user=data.session&&data.session.user;
+      if(!user)return loginScreen();
+      afterLogin();cloudPull();return;
+    }catch(e){toast('Internet nahi — phone ka data dikha rahe hain');}
+  }
+  afterLogin();
+}
+start();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
 </script>
