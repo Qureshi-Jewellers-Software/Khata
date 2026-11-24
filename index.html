@@ -170,10 +170,10 @@ nav button.on{color:var(--pri);font-weight:700}
 const KEY='mera_khata_v1';
 const DEF_CATS={
   in:['Salary','Business','Committee Mili','Gift','Kiraya Aamdani','Doosri Aamdani'],
-  out:['Ration','Bijli','Pani','Gas','Internet/Mobile','Kiraya','School Fees','Petrol','Dawai','Committee Qist','Bahar Khana','Kapre','Zakat/Sadqa','Miscellaneous']
+  out:['Ration','Bijli','Pani','Gas','Internet/Mobile','Kiraya','School Fees','Petrol','Dawai','Committee Qist','Bahar Khana','Kapre','Zakat/Sadqa','Qarz Qist','Miscellaneous']
 };
 const CAT_ICON={Salary:'💼',Business:'🏪','Committee Mili':'🎉',Gift:'🎁','Kiraya Aamdani':'🏠','Doosri Aamdani':'➕',
- Ration:'🛒',Bijli:'💡',Pani:'🚰',Gas:'🔥','Credit Card Bill':'💳','Internet/Mobile':'📶',Kiraya:'🏠','School Fees':'🎓',Petrol:'⛽',Dawai:'💊','Committee Qist':'👥','Bahar Khana':'🍔',Kapre:'👕','Zakat/Sadqa':'🤲',Miscellaneous:'📦',Transfer:'🔁'};
+ Ration:'🛒',Bijli:'💡',Pani:'🚰',Gas:'🔥','Credit Card Bill':'💳','Internet/Mobile':'📶',Kiraya:'🏠','School Fees':'🎓',Petrol:'⛽',Dawai:'💊','Committee Qist':'👥','Bahar Khana':'🍔',Kapre:'👕','Zakat/Sadqa':'🤲','Qarz Qist':'🏦',Miscellaneous:'📦',Transfer:'🔁'};
 const ACC_ICON={cash:'💵',bank:'🏦',wallet:'📱',card:'💳'};
 // voice words -> category
 const VOICE_CAT={Ration:['ration','rashan','sauda','grocery','doodh','milk','sabzi','atta','آٹا','راشن','دودھ','سبزی'],Bijli:['bijli','electric','light','k-electric','بجلی'],Pani:['pani','water','پانی'],Gas:['gas','sui gas','گیس'],
@@ -185,11 +185,11 @@ function blank(){return{v:2,tx:[],people:[],led:[],committees:[],bills:[
   {id:uid(),name:'Gas ka bill',cat:'Gas',amount:0,due:10},
   {id:uid(),name:'Pani ka bill',cat:'Pani',amount:0,due:10},
   {id:uid(),name:'Credit Card bill',cat:'Credit Card Bill',amount:0,due:20,card:'card'}
- ],billPaid:{},quick:[],cats:JSON.parse(JSON.stringify(DEF_CATS)),accs:defAccs(),budgets:{},goals:[],recur:[],recurDone:{},zakat:{},set:{pin:'1234',pinInit:true,name:'Mera Khata',dark:false,notif:false}}}
+ ],billPaid:{},quick:[],subcats:{Ration:['Doodh','Sabzi','Atta/Chawal','Gosht','Phal']},assets:[],loans:[],cats:JSON.parse(JSON.stringify(DEF_CATS)),accs:defAccs(),budgets:{},goals:[],recur:[],recurDone:{},zakat:{},set:{pin:'1234',pinInit:true,name:'Mera Khata',dark:false,notif:false}}}
 function defAccs(){return[{id:'cash',name:'Cash (jeb)',type:'cash',open:0},{id:'bank',name:'Bank',type:'bank',open:0},{id:'wallet',name:'JazzCash / Easypaisa',type:'wallet',open:0},{id:'card',name:'Credit Card',type:'card',open:0,limit:0}]}
 function migrate(d){
   d.cats=d.cats||JSON.parse(JSON.stringify(DEF_CATS));d.set=d.set||{};if(!d.set.pinInit){if(!d.set.pin)d.set.pin='1234';d.set.pinInit=true}d.billPaid=d.billPaid||{};
-  d.accs=d.accs||defAccs();d.quick=d.quick||[];d.budgets=d.budgets||{};d.goals=d.goals||[];d.recur=d.recur||[];d.recurDone=d.recurDone||{};d.zakat=d.zakat||{};
+  d.accs=d.accs||defAccs();d.quick=d.quick||[];d.subcats=d.subcats||{};d.assets=d.assets||[];d.loans=d.loans||[];if(!d.cats.out.includes('Qarz Qist'))d.cats.out.push('Qarz Qist');d.budgets=d.budgets||{};d.goals=d.goals||[];d.recur=d.recur||[];d.recurDone=d.recurDone||{};d.zakat=d.zakat||{};
   d.tx.forEach(t=>{if(t.type!=='tr'&&t.acc===undefined)t.acc='cash'});
   d.bills.forEach(b=>{if(b.cat==='Credit Card Bill'&&!b.card){const c=d.accs.find(a=>a.type==='card');if(c)b.card=c.id}});
   d.v=2;return d}
@@ -241,6 +241,7 @@ function fabClick(){
   if(tab==='accounts')return accForm();
   if(tab==='goals')return goalForm();
   if(tab==='recur')return recurForm();
+  if(tab==='loans')return loanForm();
   txForm();
 }
 function render(){
@@ -249,9 +250,9 @@ function render(){
   $('htitle').textContent=D.set.name||'Mera Khata';
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
   $('monthBar').style.display=['home','hisaab','bills','report','budget'].includes(tab)?'flex':'none';
-  $('fab').style.display=['more','report','person','budget','zakat','stmt'].includes(tab)?'none':'block';
+  $('fab').style.display=['more','report','person','budget','zakat','stmt','networth'].includes(tab)?'none':'block';
   ({home:vHome,hisaab:vHisaab,udhaar:vUdhaar,committee:vCommittee,bills:vBills,more:vMore,report:vReport,person:vPerson,
-    accounts:vAccounts,stmt:vStmt,budget:vBudget,goals:vGoals,recur:vRecur,zakat:vZakat}[tab]||vHome)($('view'));
+    accounts:vAccounts,stmt:vStmt,networth:vNet,loans:vLoans,budget:vBudget,goals:vGoals,recur:vRecur,zakat:vZakat}[tab]||vHome)($('view'));
 }
 
 /* ================= REMINDERS ================= */
@@ -262,6 +263,7 @@ function reminders(){
     const dues=D.led.filter(l=>l.pid===p.id&&l.due).map(l=>l.due).sort();if(!dues.length)return;const due=dues[dues.length-1];const dd=dayDiff(due);
     if(dd<=3)out.push({ic:'🤝',t:`${p.name}: ${rs(bal)} ${bal>0?'lene':'dene'} — ${dd<0?(-dd)+' din se baqi':dd===0?'aaj wapsi':dd+' din mein wapsi'}`,k:dd<0?'r':'a',pid:p.id})});
   D.committees.forEach(c=>{if(cActive(c,m)&&!(c.paid||{})[m])out.push({ic:'👥',t:`${c.name}: is mahine ki qist ${rs(c.amount)} baqi`,k:'a'})});
+  D.loans.forEach(l=>{if(lActive(l,m)&&!(l.paid||{})[m])out.push({ic:'🏦',t:`${l.name}: is mahine ki qist ${rs(l.inst)} baqi`,k:'a'})});
   return out}
 function notifyOnce(){
   if(!D.set.notif||!('Notification' in window)||Notification.permission!=='granted')return;
@@ -333,13 +335,13 @@ function budRow([c,l,s]){const p=s/l*100,col=p>=100?'var(--red)':p>=80?'var(--am
 function sortTx(a,b){return b.date.localeCompare(a.date)||(b.ts||0)-(a.ts||0)}
 function txList(a){return a.map(t=>{
   if(t.type==='tr')return `<div class="row" onclick="trForm('${t.id}')"><div class="av">🔁</div><div class="grow"><div class="t">${esc(accName(t.from))} → ${esc(accName(t.to))}</div><div class="s">${fd(t.date)}${t.note?' · '+esc(t.note):''}</div></div><div class="amt m">${rs(t.amount)}</div></div>`;
-  return `<div class="row" onclick="txForm(null,'${t.id}')"><div class="av" style="background:${t.type==='in'?'var(--greenbg)':'var(--redbg)'}">${CAT_ICON[t.cat]||(t.type==='in'?'⬇':'⬆')}</div><div class="grow"><div class="t">${esc(t.cat)}${t.photo?' 📷':''}${t.rid?' 🔄':''}</div><div class="s">${fd(t.date)}${t.acc?' · '+(ACC_ICON[(D.accs.find(a=>a.id===t.acc)||{}).type]||''):''}${t.note?' · '+esc(t.note):''}</div></div><div class="amt ${t.type==='in'?'g':'r'}">${t.type==='in'?'+':'−'} ${rs(t.amount)}</div></div>`}).join('')}
+  return `<div class="row" onclick="txForm(null,'${t.id}')"><div class="av" style="background:${t.type==='in'?'var(--greenbg)':'var(--redbg)'}">${CAT_ICON[t.cat]||(t.type==='in'?'⬇':'⬆')}</div><div class="grow"><div class="t">${esc(t.cat)}${t.sub?' › '+esc(t.sub):''}${t.photo?' 📷':''}${t.rid?' 🔄':''}${t.grp?' ✂️':''}</div><div class="s">${fd(t.date)}${t.acc?' · '+(ACC_ICON[(D.accs.find(a=>a.id===t.acc)||{}).type]||''):''}${t.note?' · '+esc(t.note):''}</div></div><div class="amt ${t.type==='in'?'g':'r'}">${t.type==='in'?'+':'−'} ${rs(t.amount)}</div></div>`}).join('')}
 
 /* ================= HISAAB ================= */
 function vHisaab(v){
   if(hView==='cal'&&!hisaabQ.trim())return vCal(v);
   const q=hisaabQ.trim().toLowerCase();
-  let tx=q?D.tx.filter(t=>(t.cat+' '+(t.note||'')+' '+t.amount+' '+accName(t.acc)).toLowerCase().includes(q)).sort(sortTx):monthTx(cur).sort(sortTx);
+  let tx=q?D.tx.filter(t=>(t.cat+' '+(t.sub||'')+' '+(t.note||'')+' '+t.amount+' '+accName(t.acc)).toLowerCase().includes(q)).sort(sortTx):monthTx(cur).sort(sortTx);
   if(hisaabType!=='all')tx=tx.filter(t=>t.type===hisaabType);
   if(hisaabCat)tx=tx.filter(t=>t.cat===hisaabCat);
   const base=q?D.tx:monthTx(cur);
@@ -365,7 +367,7 @@ function vHisaab(v){
 /* ---------- Entry form (with voice + photo) ---------- */
 function txForm(type,id,voice){setTimeout(()=>txForm.date=null,0);
   const t=id?D.tx.find(x=>x.id===id):{type:type||'out',cat:'',amount:'',date:(txForm.date)||(cur===curPeriod()?today():pRange(cur)[0]),note:'',acc:D.set.defAcc||'cash'};
-  let tp=t.type, cat=t.cat, photo=null, photoChanged=false;
+  let tp=t.type, cat=t.cat, sub=t.sub||'', photo=null, photoChanged=false, split=null;
   const keep=()=>{t.amount=$('fAmt').value;t.date=$('fDate').value;t.note=$('fNote').value;t.acc=$('fAcc').value};
   const draw=()=>{
     const cats=D.cats[tp];
@@ -380,6 +382,8 @@ function txForm(type,id,voice){setTimeout(()=>txForm.date=null,0);
     <div class="hint" id="vHeard"></div>
     <label>Category</label>
     <div class="chips" id="catChips">${cats.map(c=>`<button class="chip ${cat===c?'on':''}" data-c="${esc(c)}">${CAT_ICON[c]||''} ${esc(c)}</button>`).join('')}<button class="chip" data-new="1">＋ Nayi</button></div>
+    <div id="subWrap"></div>
+    ${!id?`<button class="btn sm light" id="fSplitBtn" style="margin-top:10px">✂️ Kai categories mein baantein (split)</button><div id="splitBox"></div>`:''}
     <label>${tp==='in'?'Paise kahan aaye':'Kis se diye'}</label><select id="fAcc">${accOpts(t.acc,'— koi account nahi —')}</select>
     <label>Tareekh</label><input id="fDate" type="date" value="${t.date}">
     <label>Note (zaroori nahi)</label><input id="fNote" value="${esc(t.note)}" placeholder="Maslan: Imtiaz store se">
@@ -389,12 +393,28 @@ function txForm(type,id,voice){setTimeout(()=>txForm.date=null,0);
     ${!id?`<label style="display:flex;gap:8px;align-items:center;color:var(--ink);font-size:14px;margin-top:12px"><input type="checkbox" id="fQuick" style="width:20px;height:20px"> ⚡ Is ka "jaldi entry" button bhi bana dein</label>`:''}
     <button class="btn full ${tp==='in'?'g':'r'}" id="fSave">Save karein</button>
     ${id?`<button class="btn full light" style="color:var(--red)" id="fDel">🗑 Delete karein</button>`:''}`);
-    $('tpIn').onclick=()=>{keep();tp='in';cat='';draw()};
-    $('tpOut').onclick=()=>{keep();tp='out';cat='';draw()};
+    const drawSub=()=>{const w=$('subWrap');if(!w)return;if(!cat||split){w.innerHTML='';return}const subs=(D.subcats||{})[cat]||[];
+      w.innerHTML=`<label>Sub-category (zaroori nahi)</label><div class="chips" id="subChips">${subs.map(x=>`<button class="chip ${sub===x?'on':''}" data-s="${esc(x)}">${esc(x)}</button>`).join('')}<button class="chip" data-new="1">＋</button></div>`;
+      $('subChips').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.new){const n=prompt('Nayi sub-category (maslan Doodh):');if(n&&n.trim()){D.subcats=D.subcats||{};(D.subcats[cat]=D.subcats[cat]||[]).push(n.trim());save();sub=n.trim();drawSub()}return}
+        sub=sub===b.dataset.s?'':b.dataset.s;drawSub()}};
+    const drawSplit=()=>{const box=$('splitBox');if(!box)return;if(!split){box.innerHTML='';$('fAmt').readOnly=false;$('catChips').style.display='';return}
+      $('catChips').style.display='none';$('fAmt').readOnly=true;
+      box.innerHTML=`<div class="card" style="background:var(--soft);margin-top:8px;padding:10px">${split.map((r,i)=>`<div style="display:flex;gap:6px;margin-bottom:6px"><select data-i="${i}" class="spC" style="flex:1.3">${D.cats[tp].map(c=>`<option ${c===r.cat?'selected':''}>${esc(c)}</option>`).join('')}</select><input data-i="${i}" class="spA" type="number" inputmode="decimal" value="${r.amount||''}" placeholder="Rs" style="flex:1"><button class="x" data-i="${i}" onclick="this.dataset.rm=1">✕</button></div>`).join('')}
+        <button class="btn sm light" id="spAdd">＋ Aur line</button> <button class="btn sm light" id="spOff" style="color:var(--red)">Split band</button></div>`;
+      const tot=()=>{$('fAmt').value=split.reduce((a,r)=>a+(+r.amount||0),0)||''};tot();
+      box.querySelectorAll('.spC').forEach(e=>e.onchange=()=>split[e.dataset.i].cat=e.value);
+      box.querySelectorAll('.spA').forEach(e=>e.oninput=()=>{const i=+e.dataset.i;split[i].amount=+e.value;if(i===0)split.t0=1;else if(split.base&&!split.t0){split[0].amount=Math.max(0,split.base-split.slice(1).reduce((x,r)=>x+(+r.amount||0),0));box.querySelector('.spA[data-i="0"]').value=split[0].amount||''}tot()});
+      box.querySelectorAll('.x').forEach(e=>e.onclick=()=>{split.splice(+e.dataset.i,1);if(split.length<2)split=null;drawSplit();drawSub()});
+      $('spAdd').onclick=()=>{split.push({cat:D.cats[tp][0],amount:0});drawSplit()};
+      $('spOff').onclick=()=>{split=null;drawSplit();drawSub()}};
+    if($('fSplitBtn'))$('fSplitBtn').onclick=()=>{const a=+$('fAmt').value||0;if(!split){split=[{cat:cat||D.cats[tp][0],amount:a},{cat:D.cats[tp][1]||D.cats[tp][0],amount:0}];split.base=a}drawSplit();drawSub()};
+    drawSub();drawSplit();
+    $('tpIn').onclick=()=>{keep();tp='in';cat='';sub='';split=null;draw()};
+    $('tpOut').onclick=()=>{keep();tp='out';cat='';sub='';split=null;draw()};
     if($('tpTr'))$('tpTr').onclick=()=>{closeM();trForm()};
     $('catChips').onclick=e=>{const b=e.target.closest('button');if(!b)return;
       if(b.dataset.new){const n=prompt('Nayi category ka naam:');if(n&&n.trim()){keep();D.cats[tp].push(n.trim());save();cat=n.trim();draw()}return}
-      cat=b.dataset.c;[...$('catChips').children].forEach(x=>x.classList.toggle('on',x===b))};
+      cat=b.dataset.c;sub='';[...$('catChips').children].forEach(x=>x.classList.toggle('on',x===b));drawSub()};
     $('fMic').onclick=()=>listen(txt=>{
       $('vHeard').textContent='Suna: "'+txt+'"';const r=parseVoice(txt);
       if(r.amount)$('fAmt').value=r.amount;
@@ -409,8 +429,12 @@ function txForm(type,id,voice){setTimeout(()=>txForm.date=null,0);
     $('fImg').onclick=()=>{const w=window.open();if(w)w.document.write('<img src="'+$('fImg').src+'" style="width:100%">')};
     if(photo)showImg(photo);else if(id&&t.photo&&!photoChanged)idbGet(id).then(p=>{if(p){photo=p;showImg(p)}});
     $('fSave').onclick=async()=>{
+      if(split){const rows=split.filter(r=>+r.amount>0);if(rows.length<1)return toast('Raqam likhein');const g=uid(),dt=$('fDate').value||today(),nt=$('fNote').value.trim(),ac=$('fAcc').value;
+        const ids=rows.map(r=>{const x={id:uid(),ts:Date.now(),type:tp,cat:r.cat,amount:+r.amount,date:dt,note:nt,acc:ac,grp:g};D.tx.push(x);return x.id});
+        if(photoChanged&&photo){await idbSet(ids[0],photo);D.tx.find(x=>x.id===ids[0]).photo=1}
+        save();closeM();toast(rows.length+' hisson mein save ✓');render();return}
       const a=+$('fAmt').value;if(!a||a<=0)return toast('Raqam likhein');if(!cat)return toast('Category chunein');
-      const o={type:tp,cat,amount:a,date:$('fDate').value||today(),note:$('fNote').value.trim(),acc:$('fAcc').value};
+      const o={type:tp,cat,sub,amount:a,date:$('fDate').value||today(),note:$('fNote').value.trim(),acc:$('fAcc').value};
       let tid=id;
       if(id)Object.assign(t,o);else{tid=uid();D.tx.push({id:tid,ts:Date.now(),...o})}
       if($('fQuick')&&$('fQuick').checked&&!id){D.quick=D.quick||[];D.quick.push({id:uid(),type:o.type,cat:o.cat,amount:o.amount,acc:o.acc,note:o.note})}
@@ -422,7 +446,7 @@ function txForm(type,id,voice){setTimeout(()=>txForm.date=null,0);
       if(tp==='out'&&lim>0){const s=catSpent(periodOf(o.date),o.cat);if(s>lim)toast('⚠️ '+o.cat+' ka budget '+rs(s-lim)+' se paar!',3200);else if(s>=lim*.8)toast('⚠️ '+o.cat+' budget ka '+Math.round(s/lim*100)+'% istemal',2800);else toast('Save ho gaya ✓')}
       else toast('Save ho gaya ✓');
       render()};
-    if(id)$('fDel').onclick=()=>{if(confirm('Ye entry delete karein?')){D.tx=D.tx.filter(x=>x.id!==id);unlinkTx(id);idbDel(id);save();closeM();render()}};
+    if(id)$('fDel').onclick=()=>{{const _u=snapU();D.tx=D.tx.filter(x=>x.id!==id);unlinkTx(id);save();closeM();render();offerUndo(_u)}};
     setTimeout(()=>!id&&!voice&&$('fAmt').focus(),150);
   };
   draw();
@@ -447,7 +471,7 @@ function trForm(id){
   $('tS').onclick=()=>{const o={type:'tr',cat:'Transfer',from:$('tF').value,to:$('tT').value,amount:+$('tA').value,date:$('tD').value||today(),note:$('tN').value.trim()};
     if(!o.amount)return toast('Raqam likhein');if(o.from===o.to)return toast('Dono account alag chunein');
     if(id)Object.assign(t,o);else D.tx.push({id:uid(),ts:Date.now(),...o});save();closeM();toast('Save ✓');render()};
-  if(id)$('tX').onclick=()=>{if(confirm('Delete karein?')){D.tx=D.tx.filter(x=>x.id!==id);unlinkTx(id);save();closeM();render()}};
+  if(id)$('tX').onclick=()=>{{const _u=snapU();D.tx=D.tx.filter(x=>x.id!==id);unlinkTx(id);save();closeM();render();offerUndo(_u)}};
 }
 
 /* ---------- Voice ---------- */
@@ -546,7 +570,7 @@ function goalForm(id){const g=id?D.goals.find(x=>x.id===id):{name:'',target:'',b
   ${id?`<button class="btn full light" style="color:var(--red)" id="gX">🗑 Goal hatayein</button>`:''}`);
   $('gS').onclick=()=>{const o={name:$('gN').value.trim(),target:+$('gT').value,by:$('gB').value};if(!o.name||!o.target)return toast('Naam aur raqam likhein');
     if(id)Object.assign(g,o);else D.goals.push({id:uid(),adds:[],...o});save();closeM();render()};
-  if(id)$('gX').onclick=()=>{if(confirm('Goal hatayein?')){D.goals=D.goals.filter(x=>x.id!==id);save();closeM();render()}}}
+  if(id)$('gX').onclick=()=>{{const _u=snapU();D.goals=D.goals.filter(x=>x.id!==id);save();closeM();render();offerUndo(_u)}}}
 function goalOpen(id){const g=D.goals.find(x=>x.id===id),s=sum(g.adds||[],x=>x.amount);
   let perM='';if(g.by&&s<g.target){const[y,m]=g.by.split('-').map(Number),n=new Date(),left=(y-n.getFullYear())*12+(m-n.getMonth()-1);if(left>0)perM=`<div class="hint">Waqt par poora karne ke liye har mahine ~${rs((g.target-s)/left)} jama karein.</div>`}
   sheet(`<h2>⭐ ${esc(g.name)}<button class="x" onclick="closeM()">✕</button></h2>
@@ -590,7 +614,7 @@ function recurForm(id){const r=id?D.recur.find(x=>x.id===id):{type:'out',cat:'Ki
   if($('rOff'))$('rOff').onclick=e=>{r.off=!r.off;e.target.classList.toggle('on',!r.off)};
   $('rSv').onclick=()=>{const o={type:tp,cat:$('rC').value,amount:+$('rA').value,day:Math.min(31,Math.max(1,+$('rD').value|0)),acc:$('rAc').value,note:$('rN').value.trim(),start:$('rS').value||ym(new Date())};
     if(!o.amount)return toast('Raqam likhein');if(id)Object.assign(r,o);else D.recur.push({id:uid(),...o});save();closeM();runRecurring();render()};
-  if(id)$('rX').onclick=()=>{if(confirm('Hatayein?')){D.recur=D.recur.filter(x=>x.id!==id);save();closeM();render()}}};draw()}
+  if(id)$('rX').onclick=()=>{{const _u=snapU();D.recur=D.recur.filter(x=>x.id!==id);save();closeM();render();offerUndo(_u)}}};draw()}
 
 /* ================= UDHAAR ================= */
 function vUdhaar(v){
@@ -658,7 +682,7 @@ function personForm(id){
     else{const np={id:uid(),name:n,phone:$('pPh').value.trim()};D.people.push(np);const o=+$('pOpen').value;
       if(o>0)D.led.push({id:uid(),ts:Date.now(),pid:np.id,kind:ok,amount:o,date:today(),note:'Purana baqaya',acc:'',due:$('pDue').value||''});curPerson=np.id}
     save();closeM();toast('Save ho gaya ✓');tab='person';render()};
-  if(id)$('pDel').onclick=()=>{if(confirm(p.name+' aur iska saara hisaab delete karein?')){D.people=D.people.filter(x=>x.id!==id);D.led=D.led.filter(l=>l.pid!==id);save();closeM();tab='udhaar';render()}};
+  if(id)$('pDel').onclick=()=>{if(confirm(p.name+' aur iska saara hisaab delete karein?')){const _u=snapU();D.people=D.people.filter(x=>x.id!==id);D.led=D.led.filter(l=>l.pid!==id);save();closeM();tab='udhaar';render();offerUndo(_u)}};
   setTimeout(()=>$('pName').focus(),150);
 }
 function ledForm(pid,kind,id){
@@ -677,7 +701,7 @@ function ledForm(pid,kind,id){
     const o={amount:a,date:$('lDate').value||today(),note:$('lNote').value.trim(),acc:$('lAcc').value,due:$('lDue').value||''};
     if(id)Object.assign(l,o);else D.led.push({id:uid(),ts:Date.now(),pid,kind:k,...o});
     save();closeM();toast('Save ho gaya ✓');render()};
-  if(id)$('lDel').onclick=()=>{if(confirm('Delete karein?')){D.led=D.led.filter(x=>x.id!==id);save();closeM();render()}};
+  if(id)$('lDel').onclick=()=>{{const _u=snapU();D.led=D.led.filter(x=>x.id!==id);save();closeM();render();offerUndo(_u)}};
   setTimeout(()=>!id&&$('lAmt').focus(),150);
 }
 function waRemind(pid){const p=D.people.find(x=>x.id===pid),b=pBal(pid);
@@ -721,7 +745,7 @@ function committeeForm(id){
     if(!o.name)return toast('Naam likhein');if(!o.amount)return toast('Qist likhein');if(o.myTurn>o.members)return toast('Baari members se zyada nahi ho sakti');
     if(id)Object.assign(c,o);else D.committees.push({id:uid(),paid:{},received:false,...o});
     save();closeM();toast('Save ho gaya ✓');render()};
-  if(id)$('cDel').onclick=()=>{if(confirm('Committee delete karein? (Kharche ki entries rahengi)')){D.committees=D.committees.filter(x=>x.id!==id);save();closeM();render()}};
+  if(id)$('cDel').onclick=()=>{{const _u=snapU();D.committees=D.committees.filter(x=>x.id!==id);save();closeM();render();offerUndo(_u)}};
 }
 function toggleComPay(id,m){const c=D.committees.find(x=>x.id===id);c.paid=c.paid||{};
   if(c.paid[m]){if(!confirm(mLabel(m)+' ki qist "ada nahi" karein? Kharche ki entry bhi hat jayegi.'))return;
@@ -764,7 +788,7 @@ function billForm(id){
   ${id?`<button class="btn full light" style="color:var(--red)" id="bDel">🗑 Bill list se hatayein</button>`:''}`);
   $('bSave').onclick=()=>{const o={name:$('bN').value.trim(),cat:$('bC').value,amount:+$('bA').value||0,due:+$('bD').value||'',card:$('bCard')?$('bCard').value:''};if(!o.name)return toast('Naam likhein');
     if(id)Object.assign(b,o);else D.bills.push({id:uid(),...o});save();closeM();render()};
-  if(id)$('bDel').onclick=()=>{if(confirm('Ye bill list se hatayein? (Purani entries rahengi)')){D.bills=D.bills.filter(x=>x.id!==id);save();closeM();render()}};
+  if(id)$('bDel').onclick=()=>{{const _u=snapU();D.bills=D.bills.filter(x=>x.id!==id);save();closeM();render();offerUndo(_u)}};
 }
 function payBill(id){const b=D.bills.find(x=>x.id===id);const card=b.card&&D.accs.find(a=>a.id===b.card);
   const owed=card?Math.max(0,-accBal(card.id)):0;
@@ -798,7 +822,7 @@ function vReport(v){
   <div class="card"><h3>${esc(D.set.name||'Mera Khata')} — ${mLabel(cur)}</h3><div class="grid2">
     <div class="stat s-in"><small>Aamdani</small><b>${rs(inc)}</b></div><div class="stat s-out"><small>Kharcha</small><b>${rs(out)}</b></div></div>
     <div class="grid2" style="margin-top:10px"><div class="stat s-bal"><small>Bachat</small><b>${srs(inc-out)}</b></div><div class="stat s-mut"><small>Lene / Dene</small><b style="font-size:15px"><span class="g">${rs(lena)}</span> / <span class="r">${rs(dena)}</span></b></div></div></div>
-  <div class="card"><h3>⬆ Kharcha category wise</h3>${cats.map(([c,a])=>{const l=+D.budgets[c]||0;return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${CAT_ICON[c]||'•'} ${esc(c)}</span><b>${rs(a)} <span class="m" style="font-weight:400">${Math.round(a/out*100)}%${l?' · budget '+rs(l):''}</span></b></div><div class="bar"><i style="width:${a/out*100}%;background:${l&&a>l?'var(--red)':'var(--pri)'}"></i></div></div>`}).join('')||'<div class="empty">Koi kharcha nahi</div>'}</div>
+  <div class="card"><h3>⬆ Kharcha category wise</h3>${cats.map(([c,a])=>{const l=+D.budgets[c]||0;return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${CAT_ICON[c]||'•'} ${esc(c)}</span><b>${rs(a)} <span class="m" style="font-weight:400">${Math.round(a/out*100)}%${l?' · budget '+rs(l):''}</span></b></div><div class="bar"><i style="width:${a/out*100}%;background:${l&&a>l?'var(--red)':'var(--pri)'}"></i></div>${subRows(c)}</div>`}).join('')||'<div class="empty">Koi kharcha nahi</div>'}</div>
   <div class="card"><h3>⬇ Aamdani category wise</h3>${Object.entries(gi).map(([c,a])=>`<div class="row"><div class="grow">${CAT_ICON[c]||'•'} ${esc(c)}</div><b class="g">${rs(a)}</b></div>`).join('')||'<div class="empty">Koi aamdani nahi</div>'}</div>
   <div class="card"><h3>📈 Pichle 6 mahine</h3>
     <div style="display:flex;align-items:flex-end;gap:8px;height:140px;padding-top:10px">${last6.map(([m,i,o])=>`<div style="flex:1;text-align:center"><div style="display:flex;gap:3px;align-items:flex-end;justify-content:center;height:110px"><div style="width:40%;background:var(--green);border-radius:4px 4px 0 0;height:${i/mx*100}%"></div><div style="width:40%;background:var(--red);border-radius:4px 4px 0 0;height:${o/mx*100}%"></div></div><div class="m" style="font-size:11px;margin-top:4px">${MN[+m.split('-')[1]-1]}</div></div>`).join('')}</div>
@@ -853,6 +877,8 @@ function vMore(v){
     <button onclick="go('goals')"><span>⭐</span>Bachat goal</button>
     <button onclick="go('recur')"><span>🔄</span>Har mahine wali</button>
     <button onclick="go('zakat')"><span>🤲</span>Zakat</button>
+    <button onclick="go('loans')"><span>🏦</span>Qarz / Qist</button>
+    <button onclick="go('networth')"><span>💎</span>Kul daulat</button>
   </div>
   ${cloudCard()}
   <div class="card"><h3>⚙️ Settings</h3>
@@ -872,6 +898,14 @@ function vMore(v){
     <button class="btn full light" onclick="$('restoreF').click()">⬆ Backup se data wapis layein</button>
     <input type="file" id="restoreF" accept=".json,application/json" style="display:none" onchange="restore(this)">
   </div>
+  <div class="card"><h3>📥 Excel se purana data</h3>
+    <div class="m" style="font-size:13px">Excel (.xlsx) ya CSV file mein columns: Tareekh, Qisam (Aamdani/Kharcha), Category, Raqam, Note. Pehle namuna file download kar ke dekh lein.</div>
+    <div class="btns2" style="margin-top:10px"><button class="btn light" onclick="importSample()">⬇ Namuna file</button><button class="btn g" onclick="$('impF').click()">📥 File chunein</button></div>
+    <input type="file" id="impF" accept=".xlsx,.xls,.csv,text/csv" style="display:none" onchange="importFile(this)">
+  </div>
+  <div class="card"><h3>🏷 Sub-categories</h3><div class="hint" style="margin-bottom:6px">Tap = hatayein. Nayi sub-category entry banate waqt bhi bana sakte hain.</div>
+    ${Object.entries(D.subcats||{}).filter(([c,a])=>a.length).map(([c,a])=>`<div style="margin-top:8px"><b style="font-size:13px">${esc(c)}</b><div class="chips" style="margin-top:6px">${a.map((x,i)=>`<button class="chip" onclick="delSub('${esc(c)}',${i})">${esc(x)} ✕</button>`).join('')}</div></div>`).join('')||'<div class="m" style="font-size:13px">Koi nahi</div>'}
+  </div>
   <div class="card"><h3>🏷 Categories</h3>
     <div class="m" style="font-size:13px;margin-bottom:8px">Kharcha (tap = hatayein)</div>
     <div class="chips">${D.cats.out.map((c,i)=>`<button class="chip" onclick="delCat('out',${i})">${esc(c)} ✕</button>`).join('')}<button class="chip on" onclick="addCat('out')">＋</button></div>
@@ -885,7 +919,7 @@ function toggleNotif(){
   if(!('Notification' in window))return alert('Is phone/browser mein notification nahi chalti');
   Notification.requestPermission().then(p=>{if(p==='granted'){D.set.notif=true;save();localStorage.removeItem('khata_notif_day');notifyOnce();toast('Notification on ✓')}else toast('Ijazat nahi mili');render()})}
 function addCat(t){const n=prompt('Nayi category:');if(n&&n.trim()){D.cats[t].push(n.trim());save();render()}}
-function delCat(t,i){if(confirm('"'+D.cats[t][i]+'" category list se hatayein? (Purani entries rahengi)')){D.cats[t].splice(i,1);save();render()}}
+function delCat(t,i){{const _u=snapU();D.cats[t].splice(i,1);save();render();offerUndo(_u)}}
 function setPin(){const p=$('sPin').value.trim();if(!/^\d{4,6}$/.test(p))return toast('4 se 6 number ka PIN');D.set.pin=p;save();toast('PIN lag gaya ✓');render()}
 function backup(){const blob=new Blob([JSON.stringify(D,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='khata-backup-'+today()+'.json';a.click();localStorage.setItem(KEY+'_lastbackup',new Date().toISOString());toast('Backup download ✓');setTimeout(render,300)}
 function restore(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.tx)throw 0;if(!confirm('Abhi wala data hata kar backup wala data lagayein?'))return;D=migrate(d);save();toast('Data wapis aa gaya ✓');tab='home';render()}catch(e){alert('Ye sahi backup file nahi hai')}};r.readAsText(f);inp.value=''}
@@ -938,6 +972,103 @@ async function logout(){if(!confirm('Logout karein? (Is phone se data hata diya 
 window.addEventListener('online',()=>cloud.dirty&&cloudPush(true));
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&cloud.dirty)cloudPush(true);if(document.visibilityState==='visible'&&user)cloudPull()});
 
+/* ================= UNDO ================= */
+function snapU(){return JSON.stringify(D)}
+function offerUndo(snap){toastUndo('Delete ho gaya',()=>{D=migrate(JSON.parse(snap));save();render();toast('Wapis aa gaya ✓')})}
+
+/* ================= SUB-CATEGORIES ================= */
+function subRows(c){const g={};monthTx(cur).filter(t=>t.type==='out'&&t.cat===c&&t.sub).forEach(t=>g[t.sub]=(g[t.sub]||0)+ +t.amount);
+  const e=Object.entries(g).sort((a,b)=>b[1]-a[1]);return e.length?`<div style="padding:4px 0 0 26px">${e.map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mut)"><span>› ${esc(k)}</span><span>${rs(v)}</span></div>`).join('')}</div>`:''}
+function delSub(c,i){const _u=snapU();D.subcats[c].splice(i,1);save();render();offerUndo(_u)}
+
+/* ================= LOANS / QIST PLAN ================= */
+function lActive(l,m){return m>=l.start&&m<=addM(l.start,l.months-1)}
+function lPaidN(l){return Object.keys(l.paid||{}).length}
+function vLoans(v){
+  v.innerHTML=`<button class="btn sm light" onclick="back()" style="margin-bottom:10px">‹ Wapis</button>`+(D.loans.length?D.loans.map(l=>{
+    const n=lPaidN(l),left=(l.months-n)*l.inst,months=[];for(let i=0;i<l.months;i++)months.push(addM(l.start,i));
+    return `<div class="card"><h3>🏦 ${esc(l.name)} <button class="btn sm light" onclick="loanForm('${l.id}')">✏️</button></h3>
+    <div class="grid2"><div class="stat s-mut"><small>Mahana qist</small><b>${rs(l.inst)}</b></div><div class="stat s-out"><small>Baqi qarz</small><b>${rs(left)}</b></div>
+    <div class="stat s-in"><small>Ada ki (${n}/${l.months})</small><b>${rs(n*l.inst)}</b></div><div class="stat s-bal"><small>Akhri qist</small><b style="font-size:15px">${mLabel(addM(l.start,l.months-1))}</b></div></div>
+    <div class="bar" style="margin-top:10px"><i style="width:${n/l.months*100}%;background:var(--green)"></i></div>
+    <div class="hint">Mahine pe tap = qist ada ✓ (kharche mein khud likh jayegi)</div>
+    <div class="months">${months.map(m=>`<button class="${(l.paid||{})[m]?'on':''} ${m===ym(new Date())?'me':''}" onclick="toggleLoanPay('${l.id}','${m}')">${MN[+m.split('-')[1]-1]} ${m.slice(2,4)}${(l.paid||{})[m]?' ✓':''}</button>`).join('')}</div></div>`}).join(''):`<div class="card empty">Koi qarz / qist nahi.<br>Bike, mobile, bank loan waghera ki qist ke liye <b>+</b> dabayein.</div>`)}
+function loanForm(id){const l=id?D.loans.find(x=>x.id===id):{name:'',total:'',inst:'',months:12,start:ym(new Date()),acc:'cash'};
+  sheet(`<h2>${id?'Qarz badlein':'Naya qarz / qist plan'}<button class="x" onclick="closeM()">✕</button></h2>
+  <label>Naam</label><input id="lnN" value="${esc(l.name)}" placeholder="Maslan: Bike ki qist">
+  <div class="grid2"><div><label>Kul raqam (Rs)</label><input id="lnT" type="number" inputmode="decimal" value="${l.total}"></div><div><label>Kitni qistein (mahine)</label><input id="lnM" type="number" inputmode="numeric" value="${l.months}"></div></div>
+  <label>Mahana qist (Rs)</label><input id="lnI" type="number" inputmode="decimal" value="${l.inst}"><div class="hint" id="lnH"></div>
+  <label>Pehli qist ka mahina</label><input id="lnS" type="month" value="${l.start}">
+  <label>Qist kis se deta hun</label><select id="lnA">${accOpts(l.acc,'— koi nahi —')}</select>
+  <button class="btn full" id="lnSv">Save karein</button>${id?`<button class="btn full light" style="color:var(--red)" id="lnX">🗑 Hatayein (purani entries rahengi)</button>`:''}`);
+  const calc=()=>{const t=+$('lnT').value,m=+$('lnM').value;if(t&&m&&!$('lnI').dataset.touched)$('lnI').value=Math.round(t/m)};
+  $('lnT').oninput=calc;$('lnM').oninput=calc;$('lnI').oninput=()=>$('lnI').dataset.touched=1;
+  $('lnSv').onclick=()=>{const o={name:$('lnN').value.trim(),total:+$('lnT').value,months:Math.max(1,+$('lnM').value|0),inst:+$('lnI').value,start:$('lnS').value||ym(new Date()),acc:$('lnA').value};
+    if(!o.name)return toast('Naam likhein');if(!o.inst)return toast('Qist likhein');if(id)Object.assign(l,o);else D.loans.push({id:uid(),paid:{},...o});save();closeM();render()};
+  if(id)$('lnX').onclick=()=>{const _u=snapU();D.loans=D.loans.filter(x=>x.id!==id);save();closeM();render();offerUndo(_u)}}
+function toggleLoanPay(id,m){const l=D.loans.find(x=>x.id===id);l.paid=l.paid||{};
+  if(l.paid[m]){if(!confirm(mLabel(m)+' ki qist "ada nahi" karein? Kharche ki entry bhi hat jayegi.'))return;D.tx=D.tx.filter(t=>t.id!==l.paid[m]);delete l.paid[m]}
+  else{const t={id:uid(),ts:Date.now(),type:'out',cat:'Qarz Qist',amount:l.inst,acc:l.acc??'cash',date:m===ym(new Date())?today():m+'-01',note:l.name+' qist'};D.tx.push(t);l.paid[m]=t.id;toast('Qist ada ✓')}
+  save();render()}
+
+/* ================= NET WORTH ================= */
+const AS_T={gold:['🪙','Sona (tola)'],property:['🏠','Plot / Ghar'],vehicle:['🚗','Gaari / Bike'],invest:['📈','Investment / Shares'],other:['📦','Doosri cheez']};
+function assetVal(a){return a.type==='gold'&&a.qty?a.qty*(+D.zakat.goldRate||0)||+a.value||0:+a.value||0}
+function vNet(v){
+  const cash=sum(D.accs.filter(a=>a.type!=='card'),a=>accBal(a.id)),card=Math.max(0,-sum(D.accs.filter(a=>a.type==='card'),a=>accBal(a.id)));
+  let lena=0,dena=0;D.people.forEach(p=>{const b=pBal(p.id);if(b>0)lena+=b;else dena-=b});
+  const loans=sum(D.loans,l=>(l.months-lPaidN(l))*l.inst),goals=sum(D.goals,g=>sum(g.adds||[],x=>x.amount));
+  const ast=sum(D.assets,assetVal), have=cash+lena+ast+goals, owe=card+dena+loans, net=have-owe;
+  const line=(l,a,c)=>`<div class="row" style="padding:8px 0"><div class="grow">${l}</div><b class="${c}">${rs(a)}</b></div>`;
+  v.innerHTML=`<button class="btn sm light" onclick="back()" style="margin-bottom:10px">‹ Wapis</button>
+  <div class="card" style="text-align:center"><div class="m" style="font-size:13px">Meri kul daulat (net worth)</div><div class="big ${net>=0?'g':'r'}" style="font-size:30px">${srs(net)}</div>
+  <div class="grid2" style="margin-top:10px"><div class="stat s-in"><small>Jo mera hai</small><b>${rs(have)}</b></div><div class="stat s-out"><small>Jo dena hai</small><b>${rs(owe)}</b></div></div></div>
+  <div class="card"><h3>⬆ Jo mera hai</h3>${line('💵 Cash + bank + wallet',cash,'g')}${line('🤝 Logon se lene hain',lena,'g')}${goals?line('⭐ Bachat goals mein jama',goals,'g'):''}
+  ${D.assets.map(a=>`<div class="row" style="padding:8px 0" onclick="assetForm('${a.id}')"><div class="grow">${AS_T[a.type][0]} ${esc(a.name)}${a.type==='gold'&&a.qty?` <span class="m" style="font-size:12px">(${a.qty} tola)</span>`:''}</div><b class="g">${rs(assetVal(a))} ✏️</b></div>`).join('')}
+  <button class="btn full light" onclick="assetForm()">＋ Cheez add karein (sona, plot, gaari)</button></div>
+  <div class="card"><h3>⬇ Jo dena hai</h3>${line('💳 Credit card baqaya',card,'r')}${line('🤝 Logon ko dene hain',dena,'r')}${line('🏦 Baqi qarz / qistein',loans,'r')}</div>
+  <div class="hint">Sone ki qeemat Zakat wale safhe ke "sone ka rate" se lagti hai.</div>`}
+function assetForm(id){const a=id?D.assets.find(x=>x.id===id):{name:'',type:'gold',value:'',qty:''};
+  sheet(`<h2>${id?'Cheez badlein':'Nayi cheez'}<button class="x" onclick="closeM()">✕</button></h2>
+  <label>Qisam</label><select id="asT">${Object.entries(AS_T).map(([k,[i,l]])=>`<option value="${k}" ${a.type===k?'selected':''}>${i} ${l}</option>`).join('')}</select>
+  <label>Naam</label><input id="asN" value="${esc(a.name)}" placeholder="Maslan: Ammi ka zewar / Plot Gulshan">
+  <div id="asQW"><label>Kitne tole</label><input id="asQ" type="number" inputmode="decimal" value="${a.qty||''}"><div class="hint">${+D.zakat.goldRate?'Rate: '+rs(D.zakat.goldRate)+' / tola':'Zakat safhe par sone ka rate likhein, ya neeche qeemat likh dein'}</div></div>
+  <label>Andazan qeemat (Rs)</label><input id="asV" type="number" inputmode="decimal" value="${a.value||''}">
+  <button class="btn full" id="asS">Save karein</button>${id?`<button class="btn full light" style="color:var(--red)" id="asX">🗑 Hatayein</button>`:''}`);
+  const tg=()=>$('asQW').style.display=$('asT').value==='gold'?'':'none';tg();$('asT').onchange=tg;
+  $('asS').onclick=()=>{const o={type:$('asT').value,name:$('asN').value.trim()||AS_T[$('asT').value][1],qty:+$('asQ').value||0,value:+$('asV').value||0};
+    if(!o.value&&!(o.type==='gold'&&o.qty))return toast('Qeemat likhein');if(id)Object.assign(a,o);else D.assets.push({id:uid(),...o});save();closeM();render()};
+  if(id)$('asX').onclick=()=>{const _u=snapU();D.assets=D.assets.filter(x=>x.id!==id);save();closeM();render();offerUndo(_u)}}
+
+/* ================= IMPORT (Excel / CSV) ================= */
+function importSample(){const csv='﻿Tareekh,Qisam,Category,Raqam,Account,Note\n2026-11-01,Aamdani,Salary,90000,Bank,Office\n2026-11-02,Kharcha,Ration,4500,Cash (jeb),Imtiaz\n03/11/2026,Kharcha,Bijli,7200,,K-Electric\n';
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='khata-namuna.csv';a.click()}
+function loadXLSX(){return window.XLSX?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+function parseCSV(t){const rows=[];let r=[],f='',q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+  else if(c==='"')q=true;else if(c===','||c===';'||c==='\t'){r.push(f);f=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;r.push(f);rows.push(r);r=[];f=''}else f+=c}
+  if(f||r.length){r.push(f);rows.push(r)}return rows.filter(x=>x.some(y=>String(y).trim()))}
+function normDate(v){if(v instanceof Date&&!isNaN(v))return v.getFullYear()+'-'+String(v.getMonth()+1).padStart(2,'0')+'-'+String(v.getDate()).padStart(2,'0');
+  if(typeof v==='number'&&v>20000){const d=new Date(Math.round((v-25569)*864e5));return normDate(new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()))}
+  v=String(v||'').trim();let m=v.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);if(m)return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');
+  m=v.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})/);if(m){let y=m[3].length===2?'20'+m[3]:m[3];return y+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0')}return ''}
+async function importFile(inp){const f=inp.files[0];inp.value='';if(!f)return;let rows;
+  try{if(/\.csv$/i.test(f.name)){rows=parseCSV(await f.text())}else{toast('File parh raha hun…');await loadXLSX();const wb=XLSX.read(await f.arrayBuffer(),{cellDates:true});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true})}}
+  catch(e){return alert('File nahi khul saki. Internet check karein ya CSV mein save kar ke dobara try karein.')}
+  if(!rows||rows.length<2)return alert('File mein data nahi mila');
+  const h=rows[0].map(x=>String(x||'').toLowerCase().trim());const col=ks=>h.findIndex(x=>ks.some(k=>x.includes(k)));
+  const cD=col(['tareekh','date','تاریخ']),cT=col(['qisam','type','قسم']),cC=col(['category','cat','کیٹیگری']),cA=col(['raqam','amount','rs','رقم']),cAc=col(['account','اکاؤنٹ']),cN=col(['note','tafseel','detail','description','نوٹ']);
+  if(cD<0||cA<0)return alert('Tareekh aur Raqam ke columns nahi mile. Namuna file dekhein.');
+  const out=[];let skip=0;
+  rows.slice(1).forEach(r=>{const d=normDate(r[cD]);let a=parseFloat(String(r[cA]??'').replace(/[^\d.\-]/g,''));if(!d||!a){skip++;return}
+    let tv=cT>=0?String(r[cT]||'').toLowerCase():'';let type=/aamdani|income|in\b|credit|آمدنی/.test(tv)?'in':/kharcha|expense|out|debit|خرچ/.test(tv)?'out':(a<0?'out':'out');
+    a=Math.abs(a);let cat=cC>=0&&String(r[cC]||'').trim()||(type==='in'?'Doosri Aamdani':'Miscellaneous');
+    if(!D.cats[type].includes(cat))D.cats[type].push(cat);
+    const an=cAc>=0?String(r[cAc]||'').trim().toLowerCase():'';const acc=an?(D.accs.find(x=>x.name.toLowerCase()===an||x.name.toLowerCase().startsWith(an))||{}).id||'':'';
+    out.push({id:uid(),ts:Date.now(),type,cat,amount:a,date:d,note:cN>=0?String(r[cN]||'').trim():'',acc,imp:1})});
+  if(!out.length)return alert('Koi sahi line nahi mili');
+  if(!confirm(out.length+' entries mili hain'+(skip?' ('+skip+' lines chhor di)':'')+'. Hisaab mein daal dein?'))return;
+  const _u=snapU();D.tx.push(...out);save();render();toastUndo(out.length+' entries import ho gayi',()=>{D=migrate(JSON.parse(_u));save();render()})}
+
 /* ================= CALENDAR ================= */
 function vCal(v){
   const[a,b]=pRange(cur);const days=[];let d=new Date(a+'T00:00:00');const end=new Date(b+'T00:00:00');
@@ -969,8 +1100,9 @@ function forecastCard(){
   const bm=ym(new Date()),paid=D.billPaid[bm]||{};
   D.bills.filter(x=>!paid[x.id]).forEach(x=>{const amt=x.card?Math.max(0,-accBal(x.card)):(+x.amount||0);if(amt){minus+=amt;rows.push(['🧾 '+x.name,amt,-1])}});
   D.committees.filter(c=>cActive(c,bm)&&!(c.paid||{})[bm]).forEach(c=>{minus+=c.amount;rows.push(['👥 '+c.name,c.amount,-1])});
+  D.loans.filter(l=>lActive(l,bm)&&!(l.paid||{})[bm]).forEach(l=>{minus+=l.inst;rows.push(['🏦 '+l.name,l.inst,-1])});
   // daily variable spending average (excluding bills/committee/recurring)
-  const fixed=new Set(D.bills.map(x=>x.cat).concat(['Committee Qist']));
+  const fixed=new Set(D.bills.map(x=>x.cat).concat(['Committee Qist','Qarz Qist']));
   const varOut=sum(monthTx(cur).filter(x=>x.type==='out'&&!x.rid&&!fixed.has(x.cat)),x=>x.amount);
   const passed=Math.max(1,Math.round((new Date(t+'T00:00:00')-new Date(a+'T00:00:00'))/864e5)+1);
   const daily=varOut/passed, dailyTot=Math.round(daily*daysLeft);if(dailyTot){minus+=dailyTot;rows.push(['🛒 Rozana kharcha (~'+rs(daily)+' × '+daysLeft+' din)',dailyTot,-1])}
@@ -1408,7 +1540,82 @@ Aug|اگست|Aug
 Sep|ستمبر|Sep
 Oct|اکتوبر|Oct
 Nov|نومبر|Nov
-Dec|دسمبر|Dec`;
+Dec|دسمبر|Dec
+Delete ho gaya|حذف ہو گیا|Deleted
+Wapis aa gaya|واپس آ گیا|Restored
+din|دن|days
+mahine|مہینے|months
+tola|تولہ|tola
+Sub-category (zaroori nahi)|ذیلی کیٹیگری (ضروری نہیں)|Sub-category (optional)
+Sub-categories|ذیلی کیٹیگریز|Sub-categories
+Nayi sub-category (maslan Doodh):|نئی ذیلی کیٹیگری (مثلاً دودھ):|New sub-category (e.g. Milk):
+Tap = hatayein. Nayi sub-category entry banate waqt bhi bana sakte hain.|ٹیپ = ہٹائیں۔ نیا اندراج بناتے وقت بھی بنا سکتے ہیں۔|Tap = remove. You can also add them while making an entry.
+Kai categories mein baantein (split)|کئی کیٹیگریز میں بانٹیں (سپلٹ)|Split across categories
+Aur line|اور لائن|Add line
+Split band|سپلٹ بند|Cancel split
+hisson mein save|حصوں میں محفوظ|parts saved
+Koi nahi|کوئی نہیں|None
+Doodh|دودھ|Milk
+Sabzi|سبزی|Vegetables
+Atta/Chawal|آٹا/چاول|Flour/Rice
+Gosht|گوشت|Meat
+Phal|پھل|Fruit
+Qarz / Qist plan|قرض / قسط پلان|Loans / Instalments
+Qarz / Qist|قرض / قسط|Loans / Instalments
+Qarz Qist|قرض قسط|Loan instalment
+Kul daulat (net worth)|کل دولت (نیٹ ورتھ)|Net worth
+Kul daulat|کل دولت|Net worth
+Meri kul daulat (net worth)|میری کل دولت (نیٹ ورتھ)|My net worth
+Jo mera hai|جو میرا ہے|What I own
+Jo dena hai|جو دینا ہے|What I owe
+Cash + bank + wallet|کیش + بینک + والٹ|Cash + bank + wallet
+Logon se lene hain|لوگوں سے لینے ہیں|Owed to me
+Logon ko dene hain|لوگوں کو دینے ہیں|I owe people
+Bachat goals mein jama|بچت اہداف میں جمع|Saved in goals
+Baqi qarz / qistein|باقی قرض / قسطیں|Remaining loans
+Cheez add karein (sona, plot, gaari)|چیز شامل کریں (سونا، پلاٹ، گاڑی)|Add asset (gold, plot, car)
+Sone ki qeemat Zakat wale safhe ke "sone ka rate" se lagti hai.|سونے کی قیمت زکوٰۃ والے صفحے کے "سونے کا ریٹ" سے لگتی ہے۔|Gold value uses the gold rate on the Zakat page.
+Cheez badlein|چیز تبدیل کریں|Edit asset
+Nayi cheez|نئی چیز|New asset
+Sona (tola)|سونا (تولہ)|Gold (tola)
+Plot / Ghar|پلاٹ / گھر|Plot / House
+Gaari / Bike|گاڑی / بائیک|Car / Bike
+Investment / Shares|سرمایہ کاری / شیئرز|Investment / Shares
+Doosri cheez|دوسری چیز|Other
+Maslan: Ammi ka zewar / Plot Gulshan|مثلاً: امی کا زیور / پلاٹ گلشن|e.g. Jewellery / Plot
+Kitne tole|کتنے تولے|How many tola
+Andazan qeemat (Rs)|اندازاً قیمت (روپے)|Estimated value (Rs)
+Qeemat likhein|قیمت لکھیں|Enter value
+Zakat safhe par sone ka rate likhein, ya neeche qeemat likh dein|زکوٰۃ صفحے پر سونے کا ریٹ لکھیں، یا نیچے قیمت لکھ دیں|Enter gold rate on Zakat page, or enter the value below
+Rate:|ریٹ:|Rate:
+Qarz badlein|قرض تبدیل کریں|Edit loan
+Naya qarz / qist plan|نیا قرض / قسط پلان|New loan / instalment plan
+Maslan: Bike ki qist|مثلاً: بائیک کی قسط|e.g. Bike instalment
+Kul raqam (Rs)|کل رقم (روپے)|Total amount (Rs)
+Kitni qistein (mahine)|کتنی قسطیں (مہینے)|Number of instalments (months)
+Pehli qist ka mahina|پہلی قسط کا مہینہ|First instalment month
+Qist likhein|قسط لکھیں|Enter instalment
+Baqi qarz|باقی قرض|Remaining
+Akhri qist|آخری قسط|Last instalment
+Mahine pe tap = qist ada ✓ (kharche mein khud likh jayegi)|مہینے پر ٹیپ = قسط ادا ✓ (خرچے میں خود لکھی جائے گی)|Tap a month = instalment paid ✓ (added to expenses)
+Koi qarz / qist nahi.|کوئی قرض / قسط نہیں۔|No loans.
+Bike, mobile, bank loan waghera ki qist ke liye|بائیک، موبائل، بینک لون وغیرہ کی قسط کے لیے|For bike, mobile, bank loan instalments tap
+Excel se purana data|ایکسل سے پرانا ڈیٹا|Import from Excel
+Excel (.xlsx) ya CSV file mein columns: Tareekh, Qisam (Aamdani/Kharcha), Category, Raqam, Note. Pehle namuna file download kar ke dekh lein.|ایکسل (.xlsx) یا CSV فائل میں کالم: تاریخ، قسم (آمدنی/خرچہ)، کیٹیگری، رقم، نوٹ۔ پہلے نمونہ فائل دیکھ لیں۔|Excel (.xlsx) or CSV with columns: Date, Type (Income/Expense), Category, Amount, Note. See the sample file first.
+Namuna file|نمونہ فائل|Sample file
+File chunein|فائل چنیں|Choose file
+File parh raha hun…|فائل پڑھ رہا ہوں…|Reading file…
+entries mili hain|اندراجات ملے ہیں|entries found
+lines chhor di|لائنیں چھوڑ دیں|lines skipped
+Hisaab mein daal dein?|حساب میں ڈال دیں؟|Add them?
+entries import ho gayi|اندراجات امپورٹ ہو گئے|entries imported
+Koi sahi line nahi mili|کوئی صحیح لائن نہیں ملی|No valid rows found
+File mein data nahi mila|فائل میں ڈیٹا نہیں ملا|No data in file
+Tareekh aur Raqam ke columns nahi mile. Namuna file dekhein.|تاریخ اور رقم کے کالم نہیں ملے۔ نمونہ فائل دیکھیں۔|Date and Amount columns not found. See sample file.
+File nahi khul saki. Internet check karein ya CSV mein save kar ke dobara try karein.|فائل نہیں کھل سکی۔ انٹرنیٹ چیک کریں یا CSV میں محفوظ کر کے دوبارہ کوشش کریں۔|Couldn't open file. Check internet or save as CSV and retry.
+ki qist|کی قسط|instalment
+"ada nahi" karein? Kharche ki entry bhi hat jayegi.|"ادا نہیں" کریں؟ خرچے کا اندراج بھی ہٹ جائے گا۔|mark unpaid? The expense entry will be removed too.
+aur iska saara hisaab delete karein?|اور اس کا سارا حساب حذف کریں؟|and all their history — delete?`;
 let TMAP=null,TRE=null;
 if(LANG!=='ru'){TMAP={};DICT.split('\n').forEach(l=>{const p=l.split('|');if(p.length===3)TMAP[p[0]]=LANG==='ur'?p[1]:p[2]});
   const keys=Object.keys(TMAP).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
@@ -1435,7 +1642,7 @@ function setLang(k){try{localStorage.setItem('khata_lang',k)}catch(e){}location.
 
 /* ================= DRAWER (side menu) ================= */
 const DRAWER=[['Main',[['home','🏠','Home'],['hisaab','📒','Hisaab (Aamdani / Kharcha)'],['udhaar','🤝','Udhaar (Lena / Dena)'],['committee','👥','Committee'],['bills','🧾','Bills']]],
- ['Paisa',[['accounts','💰','Accounts / Credit Card'],['budget','🎯','Budget'],['goals','⭐','Bachat goal'],['recur','🔄','Har mahine wali entries']]],
+ ['Paisa',[['accounts','💰','Accounts / Credit Card'],['budget','🎯','Budget'],['goals','⭐','Bachat goal'],['recur','🔄','Har mahine wali entries'],['loans','🏦','Qarz / Qist plan'],['networth','💎','Kul daulat (net worth)']]],
  ['Aur',[['report','📊','Report / PDF / WhatsApp'],['zakat','🤲','Zakat'],['more','⚙️','Settings / Backup']]]];
 function openDrawer(){
   const w=document.createElement('div');w.id='drw';
