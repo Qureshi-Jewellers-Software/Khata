@@ -29,6 +29,25 @@ header{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;padd
 .cloud{font-size:11px;background:rgba(255,255,255,.16);padding:5px 9px;border-radius:20px;white-space:nowrap}
 .month{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px}
 .month b{min-width:130px;text-align:center;font-size:16px}
+.month{flex-wrap:wrap}.month small{display:block;width:100%;text-align:center;font-size:11px;opacity:.85;margin-top:-6px}
+.langbtn{background:rgba(255,255,255,.16);color:#fff;padding:8px 10px;border-radius:12px;font-size:13px;font-weight:600;white-space:nowrap}
+.langmenu{position:fixed;top:56px;right:max(12px,calc(50% - 268px));background:var(--card);border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:45;overflow:hidden;min-width:170px}
+.langmenu button{display:flex;justify-content:space-between;gap:10px;width:100%;background:none;padding:13px 16px;font-size:15px;color:var(--ink);text-align:left;border-bottom:1px solid var(--line)}
+.langmenu button:last-child{border-bottom:0}.langmenu button.on{color:var(--pri);font-weight:700}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .hd{font-size:11px;color:var(--mut);text-align:center;padding:4px 0;font-weight:600}
+.cal .d{background:var(--soft);border-radius:9px;min-height:58px;padding:4px 3px;font-size:10px;text-align:center;display:flex;flex-direction:column;gap:1px}
+.cal .d b{font-size:12px;color:var(--ink)}.cal .d.today{outline:2px solid var(--pri)}.cal .d.x{background:none}
+.cal .d .o{color:var(--red);font-weight:600}.cal .d .i{color:var(--green);font-weight:600}
+.qk{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.qk button{flex:none;background:var(--soft);color:var(--ink);padding:9px 12px;border-radius:12px;font-size:13px;font-weight:600}
+.toast button{background:#fff;color:#1b2333;border-radius:8px;padding:4px 10px;margin-left:10px;font-weight:700}
+html[dir=rtl] body{font-family:"Noto Naskh Arabic","Jameel Noori Nastaleeq",system-ui,sans-serif}
+html[dir=rtl] .langmenu{right:auto;left:max(12px,calc(50% - 268px))}
+html[dir=rtl] .langmenu button{text-align:right}
+html[dir=rtl] .drw{left:auto;right:0;transform:translateX(100%)}html[dir=rtl] .drw.show{transform:none}
+html[dir=rtl] .fab{right:auto;left:max(16px,calc(50% - 264px))}
+html[dir=rtl] .drw-list button.on{border-right:0;border-left:4px solid var(--pri)}
 main{padding:14px}
 .card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(20,40,80,.06)}
 .card h3{margin:0 0 10px;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -126,10 +145,11 @@ nav button.on{color:var(--pri);font-weight:700}
       <button class="iconbtn" onclick="openDrawer()" title="Menu">☰</button>
       <h1 id="htitle">Mera Khata</h1>
       <span class="cloud" id="cloudSt" style="display:none"></span>
+      <button class="langbtn" id="langBtn" onclick="langMenu()">🌐 <span id="langLbl">Language</span> ▾</button>
     </div>
     <div class="month" id="monthBar">
       <button class="iconbtn" onclick="shiftMonth(-1)">‹</button>
-      <b id="monthLbl"></b>
+      <b id="monthLbl"></b><small id="periodLbl" style="display:none"></small>
       <button class="iconbtn" onclick="shiftMonth(1)">›</button>
     </div>
   </header>
@@ -165,11 +185,11 @@ function blank(){return{v:2,tx:[],people:[],led:[],committees:[],bills:[
   {id:uid(),name:'Gas ka bill',cat:'Gas',amount:0,due:10},
   {id:uid(),name:'Pani ka bill',cat:'Pani',amount:0,due:10},
   {id:uid(),name:'Credit Card bill',cat:'Credit Card Bill',amount:0,due:20,card:'card'}
- ],billPaid:{},cats:JSON.parse(JSON.stringify(DEF_CATS)),accs:defAccs(),budgets:{},goals:[],recur:[],recurDone:{},zakat:{},set:{pin:'1234',pinInit:true,name:'Mera Khata',dark:false,notif:false}}}
+ ],billPaid:{},quick:[],cats:JSON.parse(JSON.stringify(DEF_CATS)),accs:defAccs(),budgets:{},goals:[],recur:[],recurDone:{},zakat:{},set:{pin:'1234',pinInit:true,name:'Mera Khata',dark:false,notif:false}}}
 function defAccs(){return[{id:'cash',name:'Cash (jeb)',type:'cash',open:0},{id:'bank',name:'Bank',type:'bank',open:0},{id:'wallet',name:'JazzCash / Easypaisa',type:'wallet',open:0},{id:'card',name:'Credit Card',type:'card',open:0,limit:0}]}
 function migrate(d){
   d.cats=d.cats||JSON.parse(JSON.stringify(DEF_CATS));d.set=d.set||{};if(!d.set.pinInit){if(!d.set.pin)d.set.pin='1234';d.set.pinInit=true}d.billPaid=d.billPaid||{};
-  d.accs=d.accs||defAccs();d.budgets=d.budgets||{};d.goals=d.goals||[];d.recur=d.recur||[];d.recurDone=d.recurDone||{};d.zakat=d.zakat||{};
+  d.accs=d.accs||defAccs();d.quick=d.quick||[];d.budgets=d.budgets||{};d.goals=d.goals||[];d.recur=d.recur||[];d.recurDone=d.recurDone||{};d.zakat=d.zakat||{};
   d.tx.forEach(t=>{if(t.type!=='tr'&&t.acc===undefined)t.acc='cash'});
   d.bills.forEach(b=>{if(b.cat==='Credit Card Bill'&&!b.card){const c=d.accs.find(a=>a.type==='card');if(c)b.card=c.id}});
   d.v=2;return d}
@@ -180,7 +200,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 
 /* ================= HELPERS ================= */
 const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-let cur=ym(new Date()), tab='home', hisaabType='all', hisaabCat='', hisaabQ='', udSearch='';
+let hView='list', cur=curPeriod(), tab='home', hisaabType='all', hisaabCat='', hisaabQ='', udSearch='';
 function ym(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dayDiff(s){const a=new Date(s+'T00:00:00'),b=new Date(today()+'T00:00:00');return Math.round((a-b)/864e5)}
@@ -194,7 +214,11 @@ function fd(s){if(!s)return'';const[y,m,d]=s.split('-');return (+d)+' '+MN[+m-1]
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function $(id){return document.getElementById(id)}
 function toast(t,ms){document.querySelectorAll('.toast').forEach(x=>x.remove());const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),ms||1900)}
-function monthTx(m){return D.tx.filter(t=>t.date.startsWith(m))}
+function mS(){return Math.min(28,Math.max(1,+(D&&D.set&&D.set.mStart)||1))}
+function pRange(m){const S=mS();if(S===1)return[m+'-01',m+'-'+String(lastDay(m)).padStart(2,'0')];const n=addM(m,1);return[mDate(m,S),mDate(n,S-1)]}
+function periodOf(d){const m=d.slice(0,7);return +d.slice(8)>=mS()?m:addM(m,-1)}
+function curPeriod(){return periodOf(today())}
+function monthTx(m){const[a,b]=pRange(m);return D.tx.filter(t=>t.date>=a&&t.date<=b)}
 function sum(a,f){return a.reduce((s,x)=>s+(+f(x)||0),0)}
 function pBal(pid){return sum(D.led.filter(l=>l.pid===pid),l=>l.kind==='gave'?l.amount:-l.amount)}
 function accName(id){const a=D.accs.find(x=>x.id===id);return a?a.name:''}
@@ -221,13 +245,13 @@ function fabClick(){
 }
 function render(){
   document.body.classList.toggle('dark',!!D.set.dark);
-  $('monthLbl').textContent=mLabel(cur);
+  $('monthLbl').textContent=mLabel(cur);{const pl=$('periodLbl'),r=pRange(cur);pl.style.display=mS()>1?'block':'none';pl.textContent=fd(r[0])+' – '+fd(r[1])}
   $('htitle').textContent=D.set.name||'Mera Khata';
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
   $('monthBar').style.display=['home','hisaab','bills','report','budget'].includes(tab)?'flex':'none';
-  $('fab').style.display=['more','report','person','budget','zakat'].includes(tab)?'none':'block';
+  $('fab').style.display=['more','report','person','budget','zakat','stmt'].includes(tab)?'none':'block';
   ({home:vHome,hisaab:vHisaab,udhaar:vUdhaar,committee:vCommittee,bills:vBills,more:vMore,report:vReport,person:vPerson,
-    accounts:vAccounts,budget:vBudget,goals:vGoals,recur:vRecur,zakat:vZakat}[tab]||vHome)($('view'));
+    accounts:vAccounts,stmt:vStmt,budget:vBudget,goals:vGoals,recur:vRecur,zakat:vZakat}[tab]||vHome)($('view'));
 }
 
 /* ================= REMINDERS ================= */
@@ -257,7 +281,7 @@ function vHome(v){
   const cash=sum(D.accs.filter(a=>a.type!=='card'),a=>accBal(a.id)), cards=D.accs.filter(a=>a.type==='card'), cardDue=-sum(cards,a=>accBal(a.id));
   const bud=Object.entries(D.budgets).filter(([c,l])=>l>0).map(([c,l])=>[c,l,catSpent(cur,c)]).sort((a,b)=>b[2]/b[1]-a[2]/a[1]);
   v.innerHTML=`
-  ${rem.length&&cur===ym(new Date())?`<div class="card"><h3>🔔 Yaad-dihani</h3>${rem.map(r=>`<div class="alert" ${r.pid?`onclick="openPerson('${r.pid}')"`:''}><span>${r.ic}</span><span class="${r.k}" style="font-weight:600">${esc(r.t)}</span></div>`).join('')}</div>`:''}
+  ${rem.length&&cur===curPeriod()?`<div class="card"><h3>🔔 Yaad-dihani</h3>${rem.map(r=>`<div class="alert" ${r.pid?`onclick="openPerson('${r.pid}')"`:''}><span>${r.ic}</span><span class="${r.k}" style="font-weight:600">${esc(r.t)}</span></div>`).join('')}</div>`:''}
   <div class="card">
     <div class="stat s-bal" style="margin-bottom:10px"><small>Is mahine bacha (Aamdani − Kharcha)</small><b style="font-size:24px">${srs(inc-out)}</b></div>
     <div class="grid2">
@@ -270,6 +294,11 @@ function vHome(v){
     </div>
     <button class="btn full light" style="margin-top:10px" onclick="txForm('out',null,true)">🎤 Bol kar entry karein</button>
   </div>
+  <div class="card"><h3>⚡ Jaldi entry <span class="pill" onclick="quickManage()">✏️ Badlein</span></h3>
+    <div class="qk">${(D.quick||[]).map(q=>`<button onclick="quickAdd('${q.id}')" style="color:${q.type==='in'?'var(--green)':'var(--ink)'}">${CAT_ICON[q.cat]||'⚡'} ${esc(q.note||q.cat)} ${rs(q.amount)}</button>`).join('')}<button onclick="quickForm()" style="color:var(--pri)">＋ Naya</button></div>
+    ${(D.quick||[]).length?'':'<div class="hint">Roz wali cheezein (doodh, petrol, load) ek tap mein likhne ke liye button banayein.</div>'}
+  </div>
+  ${cur===curPeriod()?forecastCard():''}
   <div class="card" onclick="go('accounts')">
     <h3>💰 Mere paise <span class="pill">accounts ›</span></h3>
     <div class="grid2">
@@ -308,6 +337,7 @@ function txList(a){return a.map(t=>{
 
 /* ================= HISAAB ================= */
 function vHisaab(v){
+  if(hView==='cal'&&!hisaabQ.trim())return vCal(v);
   const q=hisaabQ.trim().toLowerCase();
   let tx=q?D.tx.filter(t=>(t.cat+' '+(t.note||'')+' '+t.amount+' '+accName(t.acc)).toLowerCase().includes(q)).sort(sortTx):monthTx(cur).sort(sortTx);
   if(hisaabType!=='all')tx=tx.filter(t=>t.type===hisaabType);
@@ -317,6 +347,7 @@ function vHisaab(v){
   const total=sum(tx,t=>t.type==='in'?t.amount:t.type==='out'?-t.amount:0);
   const groups={};tx.forEach(t=>(groups[t.date]=groups[t.date]||[]).push(t));
   v.innerHTML=`
+  <div class="seg"><button class="on">📋 List</button><button onclick="hView='cal';render()">📅 Calendar</button></div>
   <input class="search" id="hq" placeholder="🔍 Sab mahino mein dhoondein (naam, note, raqam)" value="${esc(hisaabQ)}">
   <div class="seg">
     <button class="${hisaabType==='all'?'on':''}" onclick="hisaabType='all';hisaabCat='';render()">Sab</button>
@@ -332,8 +363,8 @@ function vHisaab(v){
 }
 
 /* ---------- Entry form (with voice + photo) ---------- */
-function txForm(type,id,voice){
-  const t=id?D.tx.find(x=>x.id===id):{type:type||'out',cat:'',amount:'',date:cur===ym(new Date())?today():cur+'-01',note:'',acc:D.set.defAcc||'cash'};
+function txForm(type,id,voice){setTimeout(()=>txForm.date=null,0);
+  const t=id?D.tx.find(x=>x.id===id):{type:type||'out',cat:'',amount:'',date:(txForm.date)||(cur===curPeriod()?today():pRange(cur)[0]),note:'',acc:D.set.defAcc||'cash'};
   let tp=t.type, cat=t.cat, photo=null, photoChanged=false;
   const keep=()=>{t.amount=$('fAmt').value;t.date=$('fDate').value;t.note=$('fNote').value;t.acc=$('fAcc').value};
   const draw=()=>{
@@ -355,6 +386,7 @@ function txForm(type,id,voice){
     <label>Raseed / bill ki photo (zaroori nahi)</label>
     <div style="display:flex;gap:10px;align-items:center"><img id="fImg" class="thumb" style="display:none"><button class="btn sm light" id="fPhBtn">📷 Photo lein</button><button class="btn sm light" id="fPhDel" style="display:none;color:var(--red)">Hatayein</button></div>
     <input type="file" id="fPh" accept="image/*" capture="environment" style="display:none">
+    ${!id?`<label style="display:flex;gap:8px;align-items:center;color:var(--ink);font-size:14px;margin-top:12px"><input type="checkbox" id="fQuick" style="width:20px;height:20px"> ⚡ Is ka "jaldi entry" button bhi bana dein</label>`:''}
     <button class="btn full ${tp==='in'?'g':'r'}" id="fSave">Save karein</button>
     ${id?`<button class="btn full light" style="color:var(--red)" id="fDel">🗑 Delete karein</button>`:''}`);
     $('tpIn').onclick=()=>{keep();tp='in';cat='';draw()};
@@ -381,12 +413,13 @@ function txForm(type,id,voice){
       const o={type:tp,cat,amount:a,date:$('fDate').value||today(),note:$('fNote').value.trim(),acc:$('fAcc').value};
       let tid=id;
       if(id)Object.assign(t,o);else{tid=uid();D.tx.push({id:tid,ts:Date.now(),...o})}
+      if($('fQuick')&&$('fQuick').checked&&!id){D.quick=D.quick||[];D.quick.push({id:uid(),type:o.type,cat:o.cat,amount:o.amount,acc:o.acc,note:o.note})}
       const tt=D.tx.find(x=>x.id===tid);
       if(photoChanged){if(photo){await idbSet(tid,photo);tt.photo=1}else{await idbDel(tid);delete tt.photo}}
       if(o.acc!==D.set.defAcc){D.set.defAcc=o.acc}
       save();closeM();
       const lim=+D.budgets[o.cat];
-      if(tp==='out'&&lim>0){const s=catSpent(o.date.slice(0,7),o.cat);if(s>lim)toast('⚠️ '+o.cat+' ka budget '+rs(s-lim)+' se paar!',3200);else if(s>=lim*.8)toast('⚠️ '+o.cat+' budget ka '+Math.round(s/lim*100)+'% istemal',2800);else toast('Save ho gaya ✓')}
+      if(tp==='out'&&lim>0){const s=catSpent(periodOf(o.date),o.cat);if(s>lim)toast('⚠️ '+o.cat+' ka budget '+rs(s-lim)+' se paar!',3200);else if(s>=lim*.8)toast('⚠️ '+o.cat+' budget ka '+Math.round(s/lim*100)+'% istemal',2800);else toast('Save ho gaya ✓')}
       else toast('Save ho gaya ✓');
       render()};
     if(id)$('fDel').onclick=()=>{if(confirm('Ye entry delete karein?')){D.tx=D.tx.filter(x=>x.id!==id);unlinkTx(id);idbDel(id);save();closeM();render()}};
@@ -595,6 +628,7 @@ function vPerson(v){
       ${p.phone?`<a class="btn sm light" style="text-decoration:none" href="tel:${esc(p.phone)}">📞 Call</a>`:''}
       ${b!==0?`<button class="btn sm light" onclick="waRemind('${p.id}')">💬 WhatsApp</button>`:''}
       <button class="btn sm light" onclick="personForm('${p.id}')">✏️ Edit</button>
+      <button class="btn sm light" onclick="stmtPid='${p.id}';go('stmt')">📄 Statement / PDF</button>
     </div>
   </div>
   <div class="btns2" style="margin-bottom:12px">
@@ -710,7 +744,7 @@ function vBills(v){
   </div></div>
   <div class="card">
     <h3>${mLabel(cur)} ke bills</h3>
-    ${D.bills.length?D.bills.map(b=>{const tx=D.tx.find(t=>t.id===paid[b.id]);const dd=!tx&&b.due&&cur===ym(new Date())?dayDiff(mDate(cur,b.due)):null;return `<div class="row">
+    ${D.bills.length?D.bills.map(b=>{const tx=D.tx.find(t=>t.id===paid[b.id]);const dd=!tx&&b.due&&cur===curPeriod()?dayDiff(mDate(cur,b.due)):null;return `<div class="row">
       <button class="chk ${tx?'on':''}" onclick="${tx?`unpayBill('${b.id}')`:`payBill('${b.id}')`}">${tx?'✓':''}</button>
       <div class="grow" onclick="billForm('${b.id}')"><div class="t">${b.card?'💳':CAT_ICON[b.cat]||'🧾'} ${esc(b.name)}</div><div class="s ${dd!==null&&dd<0?'r':dd!==null&&dd<=3?'a':''}">${tx?'Ada: '+fd(tx.date):'Akhri tareekh: '+(b.due||'-')+(dd!==null&&dd<0?' (guzar gayi!)':'')}</div></div>
       <div class="amt ${tx?'g':'m'}">${tx?rs(tx.amount):b.card?rs(Math.max(0,-accBal(b.card))):b.amount?'~'+rs(b.amount):''}</div></div>`}).join(''):'<div class="empty">Koi bill nahi. + dabayein.</div>'}
@@ -738,7 +772,7 @@ function payBill(id){const b=D.bills.find(x=>x.id===id);const card=b.card&&D.acc
   <div class="m" style="font-size:13px">${mLabel(cur)}${card?' · card par baqaya '+rs(owed):''}</div>
   <label>Kitna diya (Rs)</label><input id="pyA" type="number" inputmode="decimal" value="${card?(owed||''):(b.amount||'')}">
   <label>Kis se diya</label><select id="pyAc">${D.accs.filter(a=>!card||a.id!==card.id).map(a=>`<option value="${a.id}" ${a.id===(D.set.defAcc||'cash')?'selected':''}>${ACC_ICON[a.type]} ${esc(a.name)}</option>`).join('')}${card?'':'<option value="">— koi account nahi —</option>'}</select>
-  <label>Tareekh</label><input id="pyD" type="date" value="${cur===ym(new Date())?today():mDate(cur,b.due||1)}">
+  <label>Tareekh</label><input id="pyD" type="date" value="${cur===curPeriod()?today():mDate(cur,b.due||1)}">
   <button class="btn full g" id="pyS">✓ Ada ho gaya</button>`);
   $('pyS').onclick=()=>{const a=+$('pyA').value;if(!a)return toast('Raqam likhein');
     const t=card?{id:uid(),ts:Date.now(),type:'tr',cat:'Transfer',from:$('pyAc').value,to:card.id,amount:a,date:$('pyD').value||today(),note:b.name}
@@ -825,6 +859,7 @@ function vMore(v){
     <div class="switch"><span>🌙 Dark mode</span><button class="tg ${D.set.dark?'on':''}" onclick="D.set.dark=!D.set.dark;save();render()"></button></div>
     <div class="switch"><span>🔔 Notification (bill / udhaar)</span><button class="tg ${D.set.notif?'on':''}" onclick="toggleNotif()"></button></div>
     <label>🎤 Awaz ki zuban</label><select onchange="D.set.vlang=this.value;save()"><option value="en-IN" ${(D.set.vlang||'en-IN')==='en-IN'?'selected':''}>Roman (Ration 4500)</option><option value="ur-PK" ${D.set.vlang==='ur-PK'?'selected':''}>اردو</option></select>
+    <label>📆 Mahina kis tareekh se shuru ho (salary ki tareekh)</label><select onchange="D.set.mStart=+this.value;save();cur=curPeriod();toast('Save ✓')">${Array.from({length:28},(_,i)=>i+1).map(d=>`<option value="${d}" ${mS()===d?'selected':''}>${d===1?'1 (aam mahina)':d+' tareekh se'}</option>`).join('')}</select>
     <label>App ka naam</label><div style="display:flex;gap:8px"><input id="sName" value="${esc(D.set.name||'')}" placeholder="Mera Khata"><button class="btn" onclick="D.set.name=$('sName').value.trim()||'Mera Khata';save();toast('Save ✓');render()">Save</button></div>
   </div>
   <div class="card"><h3>🔒 PIN lock</h3>
@@ -902,6 +937,501 @@ async function logout(){if(!confirm('Logout karein? (Is phone se data hata diya 
   await sb.auth.signOut();localStorage.removeItem(KEY);location.reload()}
 window.addEventListener('online',()=>cloud.dirty&&cloudPush(true));
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&cloud.dirty)cloudPush(true);if(document.visibilityState==='visible'&&user)cloudPull()});
+
+/* ================= CALENDAR ================= */
+function vCal(v){
+  const[a,b]=pRange(cur);const days=[];let d=new Date(a+'T00:00:00');const end=new Date(b+'T00:00:00');
+    // fix tz: build from parts
+  days.length=0;{let[y,m,dd]=a.split('-').map(Number);let x=new Date(y,m-1,dd);while(true){const s=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');if(s>b)break;days.push(s);x.setDate(x.getDate()+1)}}
+  const by={};monthTx(cur).forEach(t=>{const o=by[t.date]=by[t.date]||{i:0,o:0};if(t.type==='in')o.i+=+t.amount;else if(t.type==='out')o.o+=+t.amount});
+  const first=new Date(days[0]+'T00:00:00').getDay();const k=n=>n>=1e5?(n/1e5).toFixed(1).replace('.0','')+'L':n>=1e3?(n/1e3).toFixed(1).replace('.0','')+'k':Math.round(n);
+  // weeks
+  const weeks=[];for(let i=0;i<days.length;i+=7){const w=days.slice(i,i+7);weeks.push([w[0],w[w.length-1],sum(w,x=>(by[x]||{}).o||0),sum(w,x=>(by[x]||{}).i||0)])}
+  const out=sum(Object.values(by),x=>x.o),dc=Math.max(1,days.filter(x=>x<=today()).length);
+  v.innerHTML=`<div class="seg"><button onclick="hView='list';render()">📋 List</button><button class="on">📅 Calendar</button></div>
+  <div class="card"><div class="cal">${['Itw','Pir','Mng','Bdh','Jmr','Jum','Hft'].map(x=>`<div class="hd">${x}</div>`).join('')}
+  ${'<div class="d x"></div>'.repeat(first)}${days.map(x=>{const o=by[x]||{};return `<div class="d ${x===today()?'today':''}" onclick="dayOpen('${x}')"><b>${+x.slice(8)}</b>${o.o?`<span class="o">−${k(o.o)}</span>`:''}${o.i?`<span class="i">+${k(o.i)}</span>`:''}</div>`}).join('')}</div>
+  <div class="hint">Din par tap karein = us din ki entries / nayi entry</div></div>
+  <div class="card"><h3>📆 Hafta-war kharcha</h3>${weeks.map(([s,e,o,i],n)=>`<div class="row"><div class="grow"><div class="t">Hafta ${n+1}</div><div class="s">${fd(s)} – ${fd(e)}</div></div><div class="amt"><span class="r">−${rs(o)}</span>${i?`<br><span class="g" style="font-size:12px">+${rs(i)}</span>`:''}</div></div>`).join('')}
+  <div class="hint">Aam rozana kharcha: ${rs(out/dc)}</div></div>`}
+function dayOpen(d){const tx=D.tx.filter(t=>t.date===d).sort(sortTx);
+  sheet(`<h2>${fd(d)}<button class="x" onclick="closeM()">✕</button></h2>${txList(tx)||'<div class="empty">Is din koi entry nahi</div>'}
+  <div class="btns2" style="margin-top:12px"><button class="btn g" onclick="closeM();txForm.date='${d}';txForm('in')">+ Aamdani</button><button class="btn r" onclick="closeM();txForm.date='${d}';txForm('out')">+ Kharcha</button></div>`)}
+
+/* ================= FORECAST ================= */
+function forecastCard(){
+  const[a,b]=pRange(cur),t=today();const daysLeft=Math.max(0,Math.round((new Date(b+'T00:00:00')-new Date(t+'T00:00:00'))/864e5));
+  const now=sum(D.accs.filter(x=>x.type!=='card'),x=>accBal(x.id));
+  const rows=[];let plus=0,minus=0;
+  // recurring not yet done in this period
+  D.recur.filter(r=>!r.off).forEach(r=>{let m=r.start||cur;[ym(new Date()),addM(ym(new Date()),1)].forEach(mm=>{const dt=mDate(mm,r.day);if(dt>t&&dt<=b&&mm>=(r.start||mm)&&!D.recurDone[r.id+'|'+mm]){if(r.type==='in'){plus+=r.amount;rows.push(['🔄 '+(r.note||r.cat),r.amount,1])}else{minus+=r.amount;rows.push(['🔄 '+(r.note||r.cat),r.amount,-1])}}})});
+  // unpaid bills (calendar month of today)
+  const bm=ym(new Date()),paid=D.billPaid[bm]||{};
+  D.bills.filter(x=>!paid[x.id]).forEach(x=>{const amt=x.card?Math.max(0,-accBal(x.card)):(+x.amount||0);if(amt){minus+=amt;rows.push(['🧾 '+x.name,amt,-1])}});
+  D.committees.filter(c=>cActive(c,bm)&&!(c.paid||{})[bm]).forEach(c=>{minus+=c.amount;rows.push(['👥 '+c.name,c.amount,-1])});
+  // daily variable spending average (excluding bills/committee/recurring)
+  const fixed=new Set(D.bills.map(x=>x.cat).concat(['Committee Qist']));
+  const varOut=sum(monthTx(cur).filter(x=>x.type==='out'&&!x.rid&&!fixed.has(x.cat)),x=>x.amount);
+  const passed=Math.max(1,Math.round((new Date(t+'T00:00:00')-new Date(a+'T00:00:00'))/864e5)+1);
+  const daily=varOut/passed, dailyTot=Math.round(daily*daysLeft);if(dailyTot){minus+=dailyTot;rows.push(['🛒 Rozana kharcha (~'+rs(daily)+' × '+daysLeft+' din)',dailyTot,-1])}
+  const end=now+plus-minus;
+  return `<div class="card"><h3>🔮 Mahine ke akhir tak andaza <span class="pill">${daysLeft} din baqi</span></h3>
+  <div class="grid2"><div class="stat s-bal"><small>Abhi haath mein</small><b>${srs(now)}</b></div><div class="stat ${end<0?'s-out':'s-in'}"><small>${fd(b)} tak bachenge</small><b>${srs(end)}</b></div></div>
+  ${rows.length?`<div style="margin-top:8px">${rows.map(([l,a,sg])=>`<div class="row" style="padding:7px 0"><div class="grow s" style="font-size:13px;color:var(--ink)">${esc(l)}</div><b class="${sg>0?'g':'r'}" style="font-size:13px">${sg>0?'+':'−'}${rs(a)}</b></div>`).join('')}</div>`:''}
+  ${end<0?'<div class="alert" style="margin-top:8px"><span>⚠️</span><span class="r" style="font-weight:600">Is raftar se mahina poora nahi hoga — kharcha kam karein</span></div>':''}</div>`}
+
+/* ================= QUICK ENTRIES ================= */
+function quickAdd(id){const q=D.quick.find(x=>x.id===id);const t={id:uid(),ts:Date.now(),type:q.type,cat:q.cat,amount:q.amount,acc:q.acc,note:q.note||'',date:today()};D.tx.push(t);save();render();
+  toastUndo(`✓ ${q.note||q.cat} ${rs(q.amount)} likh diya`,()=>{D.tx=D.tx.filter(x=>x.id!==t.id);save();render();toast('Wapis le liya')})}
+function quickForm(id){const q=id?D.quick.find(x=>x.id===id):{type:'out',cat:'Ration',amount:'',acc:D.set.defAcc||'cash',note:''};let tp=q.type;
+  const draw=()=>{sheet(`<h2>⚡ ${id?'Button badlein':'Naya jaldi button'}<button class="x" onclick="closeM()">✕</button></h2>
+  <div class="seg"><button class="${tp==='in'?'on':''}" id="qI">⬇ Aamdani</button><button class="${tp==='out'?'on':''}" id="qO">⬆ Kharcha</button></div>
+  <label>Button ka naam</label><input id="qN" value="${esc(q.note)}" placeholder="Maslan: Doodh">
+  <label>Category</label><select id="qC">${D.cats[tp].map(c=>`<option ${c===q.cat?'selected':''}>${esc(c)}</option>`).join('')}</select>
+  <div class="grid2"><div><label>Raqam</label><input id="qA" type="number" inputmode="decimal" value="${q.amount}"></div><div><label>Account</label><select id="qAc">${accOpts(q.acc,'— koi nahi —')}</select></div></div>
+  <button class="btn full" id="qS">Save karein</button>${id?`<button class="btn full light" style="color:var(--red)" id="qX">🗑 Button hatayein</button>`:''}`);
+  $('qI').onclick=()=>{tp='in';q.cat=D.cats.in[0];draw()};$('qO').onclick=()=>{tp='out';q.cat=D.cats.out[0];draw()};
+  $('qS').onclick=()=>{const o={type:tp,cat:$('qC').value,amount:+$('qA').value,acc:$('qAc').value,note:$('qN').value.trim()};if(!o.amount)return toast('Raqam likhein');
+    if(id)Object.assign(q,o);else (D.quick=D.quick||[]).push({id:uid(),...o});save();closeM();render()};
+  if(id)$('qX').onclick=()=>{D.quick=D.quick.filter(x=>x.id!==id);save();closeM();render()}};draw()}
+function quickManage(){sheet(`<h2>⚡ Jaldi entry buttons<button class="x" onclick="closeM()">✕</button></h2>
+  ${(D.quick||[]).map(q=>`<div class="row" onclick="closeM();quickForm('${q.id}')"><div class="av">${CAT_ICON[q.cat]||'⚡'}</div><div class="grow"><div class="t">${esc(q.note||q.cat)}</div><div class="s">${esc(q.cat)}</div></div><div class="amt">${rs(q.amount)} ✏️</div></div>`).join('')||'<div class="empty">Koi button nahi</div>'}
+  <button class="btn full" onclick="closeM();quickForm()">＋ Naya button</button>`)}
+function toastUndo(t,fn){document.querySelectorAll('.toast').forEach(x=>x.remove());const e=document.createElement('div');e.className='toast';e.innerHTML=`<span>${esc(T(t))}</span><button>${T('Undo')}</button>`;
+  e.querySelector('button').onclick=()=>{e.remove();fn()};document.body.appendChild(e);setTimeout(()=>e.remove(),5000)}
+
+/* ================= STATEMENT (person PDF) ================= */
+let stmtPid=null;
+function vStmt(v){const p=D.people.find(x=>x.id===stmtPid);if(!p)return go('udhaar');
+  const L=D.led.filter(l=>l.pid===p.id).sort((a,c)=>a.date.localeCompare(c.date)||(a.ts||0)-(c.ts||0));let run=0;
+  const rows=L.map(l=>{run+=l.kind==='gave'?l.amount:-l.amount;return `<tr><td>${fd(l.date)}</td><td>${esc(l.note||'')}</td><td class="r">${l.kind==='gave'?rs(l.amount):''}</td><td class="g">${l.kind==='took'?rs(l.amount):''}</td><td><b class="${run>0?'g':run<0?'r':''}">${rs(run)}</b></td></tr>`}).join('');
+  v.innerHTML=`<div class="noprint" style="display:flex;gap:8px;margin-bottom:10px"><button class="btn sm light" onclick="back()">‹ Wapis</button><span style="flex:1"></span>
+    <button class="btn sm g" onclick="stmtWA()">💬 WhatsApp</button><button class="btn sm light" onclick="window.print()">📄 PDF / Print</button></div>
+  <div class="card"><h3>${esc(D.set.name||'Mera Khata')} — Hisaab Statement</h3>
+    <div style="font-size:14px"><b>${esc(p.name)}</b>${p.phone?' · '+esc(p.phone):''}<br><span class="m">Tareekh: ${fd(today())}</span></div>
+    <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr style="text-align:left;color:var(--mut)"><th>Tareekh</th><th>Tafseel</th><th>Diye</th><th>Liye</th><th>Baqaya</th></tr></thead>
+    <tbody>${rows||'<tr><td colspan=5 class="m">Koi entry nahi</td></tr>'}</tbody></table></div>
+    <div class="stat ${run>0?'s-in':run<0?'s-out':'s-mut'}" style="margin-top:14px;text-align:center"><small>${run>0?'Inse lene hain':run<0?'Inko dene hain':'Hisaab barabar'}</small><b style="font-size:24px">${rs(run)}</b></div>
+  </div><style>table td,table th{padding:8px 4px;border-bottom:1px solid var(--line)}</style>`}
+function stmtWA(){const p=D.people.find(x=>x.id===stmtPid);const L=D.led.filter(l=>l.pid===p.id).sort((a,c)=>a.date.localeCompare(c.date));let run=0;
+  const lines=L.map((l,i)=>{run+=l.kind==='gave'?l.amount:-l.amount;return `${i+1}. ${fd(l.date)} — ${l.kind==='gave'?'Diye':'Liye'} ${rs(l.amount)}${l.note?' ('+l.note+')':''}`});
+  waOpen(p.phone,`*Hisaab Statement — ${p.name}*\n\n${lines.join('\n')}\n\n*${run>0?'Aap ki taraf baqi':run<0?'Meri taraf baqi':'Hisaab barabar'}: ${rs(run)}*`)}
+
+/* ================= LANGUAGE ================= */
+const LANG=(()=>{try{return localStorage.getItem('khata_lang')||'ru'}catch(e){return 'ru'}})();
+const DICT=`Mera Khata|میرا کھاتہ|My Khata
+Language|زبان|Language
+Home|ہوم|Home
+Hisaab (Aamdani / Kharcha)|حساب (آمدنی / خرچہ)|Transactions (Income / Expense)
+Udhaar (Lena / Dena)|ادھار (لینا / دینا)|Loans (Receivable / Payable)
+Hisaab|حساب|Ledger
+Udhaar|ادھار|Loans
+Committee|کمیٹی|Committee
+Bills|بل|Bills
+Main|مین|Main
+Paisa|پیسہ|Money
+Aur|مزید|More
+Accounts / Credit Card|اکاؤنٹس / کریڈٹ کارڈ|Accounts / Credit Card
+Accounts / Card|اکاؤنٹس / کارڈ|Accounts / Card
+Budget|بجٹ|Budget
+Bachat goal|بچت کا ہدف|Savings goal
+Bachat ke goal|بچت کے اہداف|Savings goals
+Har mahine wali entries|ہر مہینے والی اندراجات|Recurring entries
+Har mahine wali|ہر مہینے والی|Recurring
+Har mahine khud lagne wali entries|ہر مہینے خود لگنے والی اندراجات|Automatic monthly entries
+Report / PDF / WhatsApp|رپورٹ / پی ڈی ایف / واٹس ایپ|Report / PDF / WhatsApp
+Report / PDF|رپورٹ / پی ڈی ایف|Report / PDF
+Report|رپورٹ|Report
+Zakat ka hisaab|زکوٰۃ کا حساب|Zakat calculator
+Zakat ada ki — kharche mein likhein|زکوٰۃ ادا کی — خرچے میں لکھیں|Zakat paid — add as expense
+Zakat|زکوٰۃ|Zakat
+Settings / Backup|سیٹنگز / بیک اپ|Settings / Backup
+Settings|سیٹنگز|Settings
+Dark mode|ڈارک موڈ|Dark mode
+Light mode|لائٹ موڈ|Light mode
+Logout|لاگ آؤٹ|Logout
+Data is phone mein|ڈیٹا اس فون میں|Data on this phone
+Yaad-dihani|یاد دہانی|Reminders
+Is mahine bacha (Aamdani − Kharcha)|اس مہینے بچا (آمدنی − خرچہ)|Saved this month (Income − Expense)
+Aamdani category wise|آمدنی کیٹیگری وار|Income by category
+Kharcha category wise|خرچہ کیٹیگری وار|Expense by category
+Aamdani|آمدنی|Income
+Kharcha|خرچہ|Expense
+Bol kar entry karein|بول کر اندراج کریں|Add entry by voice
+Jaldi entry buttons|فوری اندراج بٹن|Quick entry buttons
+Jaldi entry|فوری اندراج|Quick entry
+Badlein|تبدیل کریں|Edit
+Naya button|نیا بٹن|New button
+Naya jaldi button|نیا فوری بٹن|New quick button
+Button badlein|بٹن تبدیل کریں|Edit button
+Button hatayein|بٹن ہٹائیں|Remove button
+Button ka naam|بٹن کا نام|Button name
+Koi button nahi|کوئی بٹن نہیں|No buttons
+Roz wali cheezein (doodh, petrol, load) ek tap mein likhne ke liye button banayein.|روز کی چیزیں (دودھ، پٹرول، لوڈ) ایک ٹیپ میں لکھنے کے لیے بٹن بنائیں۔|Make buttons for daily items (milk, petrol, load) to add them in one tap.
+Is ka "jaldi entry" button bhi bana dein|اس کا "فوری اندراج" بٹن بھی بنا دیں|Also make a "quick entry" button for this
+likh diya|لکھ دیا|added
+Wapis le liya|واپس لے لیا|Undone
+Undo|واپس|Undo
+Naya|نیا|New
+Nayi|نئی|New
+Mahine ke akhir tak andaza|مہینے کے آخر تک اندازہ|Month-end forecast
+din baqi|دن باقی|days left
+Abhi haath mein|ابھی ہاتھ میں|In hand now
+tak bachenge|تک بچیں گے|left by
+Rozana kharcha|روزانہ خرچہ|Daily spending
+Is raftar se mahina poora nahi hoga — kharcha kam karein|اس رفتار سے مہینہ پورا نہیں ہوگا — خرچہ کم کریں|At this pace money won't last the month — cut spending
+Mere paise|میرے پیسے|My money
+Haath mein (cash + bank + wallet)|ہاتھ میں (کیش + بینک + والٹ)|In hand (cash + bank + wallet)
+Credit card baqaya|کریڈٹ کارڈ بقایا|Credit card due
+Mujhe lene hain|مجھے لینے ہیں|To receive
+Mujhe dene hain|مجھے دینے ہیں|To pay
+Inse lene hain|ان سے لینے ہیں|They owe me
+Inko dene hain|انہیں دینے ہیں|I owe them
+Hisaab barabar hai|حساب برابر ہے|All settled
+Hisaab barabar|حساب برابر|Settled
+dekhein|دیکھیں|view
+accounts|اکاؤنٹس|accounts
+Is mahine baqi bills|اس مہینے کے باقی بل|Unpaid bills this month
+Is mahine ke sab bill ada ho gaye.|اس مہینے کے سب بل ادا ہو گئے۔|All bills paid this month.
+Akhri tareekh (din)|آخری تاریخ (دن)|Due day
+Akhri tareekh|آخری تاریخ|Due date
+Ada karein|ادا کریں|Pay
+Sab ada|سب ادا|All paid
+Ada ho gaya|ادا ہو گیا|Paid
+Ada ho gaye|ادا ہو گئے|Paid
+Ada:|ادا:|Paid:
+baqi|باقی|left
+Kahan kharch hua|کہاں خرچ ہوا|Where money went
+Abhi koi kharcha nahi likha.|ابھی کوئی خرچہ نہیں لکھا۔|No expenses yet.
+Haal hi ki entries|حالیہ اندراجات|Recent entries
+Koi entry nahi. Neeche + dabayein.|کوئی اندراج نہیں۔ نیچے + دبائیں۔|No entries. Tap + below.
+Koi entry nahi|کوئی اندراج نہیں|No entries
+Budget se|بجٹ سے|over budget by
+zyada|زیادہ|more
+Goal poora!|ہدف پورا!|Goal reached!
+List|فہرست|List
+Calendar|کیلنڈر|Calendar
+Sab mahino mein dhoondein (naam, note, raqam)|سب مہینوں میں تلاش کریں (نام، نوٹ، رقم)|Search all months (name, note, amount)
+Naam ya number dhoondein|نام یا نمبر تلاش کریں|Search name or number
+Transfer|ٹرانسفر|Transfer
+Sab categories|سب کیٹیگریز|All categories
+Sab|سب|All
+entries|اندراجات|entries
+Talash:|تلاش:|Search:
+Kuch nahi mila.|کچھ نہیں ملا۔|Nothing found.
+Is mahine koi entry nahi.|اس مہینے کوئی اندراج نہیں۔|No entries this month.
+Neeche|نیچے|Below
+dabayein|دبائیں|tap
+Din par tap karein = us din ki entries / nayi entry|دن پر ٹیپ کریں = اس دن کے اندراجات / نیا اندراج|Tap a day = that day's entries / new entry
+Hafta-war kharcha|ہفتہ وار خرچہ|Weekly spending
+Hafta|ہفتہ|Week
+Aam rozana kharcha|اوسط روزانہ خرچہ|Average daily spending
+Is din koi entry nahi|اس دن کوئی اندراج نہیں|No entries this day
+Itw|اتوار|Sun
+Pir|پیر|Mon
+Mng|منگل|Tue
+Bdh|بدھ|Wed
+Jmr|جمعرات|Thu
+Jum|جمعہ|Fri
+Hft|ہفتہ|Sat
+Entry badlein|اندراج تبدیل کریں|Edit entry
+Nayi entry|نیا اندراج|New entry
+Raqam (Rs)|رقم (روپے)|Amount (Rs)
+Raqam likhein|رقم لکھیں|Enter amount
+Raqam|رقم|Amount
+Category chunein|کیٹیگری چنیں|Choose category
+Category ka mahana budget|کیٹیگری کا ماہانہ بجٹ|Monthly budget per category
+Categories|کیٹیگریز|Categories
+Category|کیٹیگری|Category
+Paise kahan aaye|پیسے کہاں آئے|Received into
+Kis se diye|کس سے دیے|Paid from
+Kis se diya|کس سے دیا|Paid from
+koi account nahi|کوئی اکاؤنٹ نہیں|no account
+account mein na ginein|اکاؤنٹ میں نہ گنیں|don't count in an account
+Tareekh|تاریخ|Date
+Note (zaroori nahi)|نوٹ (ضروری نہیں)|Note (optional)
+Note|نوٹ|Note
+Maslan: Imtiaz store se|مثلاً: امتیاز اسٹور سے|e.g. from Imtiaz store
+Raseed / bill ki photo (zaroori nahi)|رسید / بل کی تصویر (ضروری نہیں)|Receipt / bill photo (optional)
+Photo lein|تصویر لیں|Take photo
+Hatayein|ہٹائیں|Remove
+Save karein|محفوظ کریں|Save
+Save ho gaya|محفوظ ہو گیا|Saved
+Save nahi hua! Phone ki memory check karein|محفوظ نہیں ہوا! فون کی میموری چیک کریں|Not saved! Check phone storage
+Save|محفوظ|Save
+Delete karein|حذف کریں|Delete
+Ye entry delete karein?|یہ اندراج حذف کریں؟|Delete this entry?
+Nayi category ka naam:|نئی کیٹیگری کا نام:|New category name:
+Nayi category:|نئی کیٹیگری:|New category:
+Suna:|سنا:|Heard:
+Bolein: maslan "Ration 4500"|بولیں: مثلاً "راشن 4500"|Say e.g. "Ration 4500"
+Awaz samajh nahi aayi, dobara bolein|آواز سمجھ نہیں آئی، دوبارہ بولیں|Didn't catch that, try again
+Mic ki ijazat dein|مائیک کی اجازت دیں|Allow microphone
+Is browser mein awaz se likhna nahi chalta. Chrome istemal karein.|اس براؤزر میں آواز سے لکھنا نہیں چلتا۔ کروم استعمال کریں۔|Voice input doesn't work in this browser. Use Chrome.
+Paise ek jagah se doosri jagah|پیسے ایک جگہ سے دوسری جگہ|Move money between accounts
+Transfer badlein|ٹرانسفر تبدیل کریں|Edit transfer
+Maslan bank se cash nikalna, ya credit card ka bill bank se dena. Ye kharcha nahi ginta.|مثلاً بینک سے کیش نکالنا، یا کریڈٹ کارڈ کا بل بینک سے دینا۔ یہ خرچہ نہیں گنتا۔|e.g. cash withdrawal, or paying the card bill from bank. Not counted as expense.
+Kahan se|کہاں سے|From
+Kahan gaye|کہاں گئے|To
+Dono account alag chunein|دونوں اکاؤنٹ الگ چنیں|Choose two different accounts
+Mere accounts|میرے اکاؤنٹس|My accounts
+Card ka baqaya (dena hai)|کارڈ کا بقایا (دینا ہے)|Card due (to pay)
+Koi baqaya nahi|کوئی بقایا نہیں|Nothing due
+Balance|بیلنس|Balance
+Paise transfer karein (bank → cash, card ka bill)|پیسے ٹرانسفر کریں (بینک ← کیش، کارڈ کا بل)|Transfer money (bank → cash, card bill)
+Account badlein|اکاؤنٹ تبدیل کریں|Edit account
+Naya account|نیا اکاؤنٹ|New account
+Account hatayein|اکاؤنٹ ہٹائیں|Remove account
+Account|اکاؤنٹ|Account
+Abhi card par kitna baqaya hai|ابھی کارڈ پر کتنا بقایا ہے|Current card balance due
+Shuru ka balance (aaj kitne paise hain)|شروع کا بیلنس (آج کتنے پیسے ہیں)|Opening balance (money today)
+Card limit (zaroori nahi)|کارڈ کی حد (ضروری نہیں)|Card limit (optional)
+Qisam|قسم|Type
+Naam likhein|نام لکھیں|Enter name
+Naam aur raqam likhein|نام اور رقم لکھیں|Enter name and amount
+Naam|نام|Name
+Kul budget|کل بجٹ|Total budget
+Kharch hua|خرچ ہوا|Spent
+Har category ki had likhein. Khali chhor dein to koi had nahi. Had ke 80% par peeli aur paar hone par laal warning aayegi.|ہر کیٹیگری کی حد لکھیں۔ خالی چھوڑ دیں تو کوئی حد نہیں۔ 80% پر پیلی اور حد پار ہونے پر لال وارننگ آئے گی۔|Set a limit per category. Leave empty for no limit. Yellow warning at 80%, red when exceeded.
+Is mahine:|اس مہینے:|This month:
+Had|حد|Limit
+Budget save|بجٹ محفوظ|Budget saved
+ka budget|کا بجٹ|budget
+se paar!|سے پار!|exceeded!
+budget ka|بجٹ کا|of budget
+istemal|استعمال|used
+Goal badlein|ہدف تبدیل کریں|Edit goal
+Naya goal|نیا ہدف|New goal
+Goal hatayein?|ہدف ہٹائیں؟|Remove goal?
+Goal hatayein|ہدف ہٹائیں|Remove goal
+Goal edit|ہدف میں ترمیم|Edit goal
+Kis cheez ke liye|کس چیز کے لیے|What for
+Kitne paise chahiye (Rs)|کتنے پیسے چاہئیں (روپے)|Target amount (Rs)
+Kab tak (zaroori nahi)|کب تک (ضروری نہیں)|By when (optional)
+Aaj kitne jama kiye|آج کتنے جمع کیے|Amount saved today
+Jama|جمع|Add
+Nikale|نکالے|Withdraw
+Koi goal nahi. + daba kar goal banayein (maslan Umrah, bike, shaadi).|کوئی ہدف نہیں۔ + دبا کر ہدف بنائیں (مثلاً عمرہ، بائیک، شادی)۔|No goals. Tap + to add one (e.g. Umrah, bike, wedding).
+Maslan: Umrah|مثلاً: عمرہ|e.g. Umrah
+Salary, kiraya, school fees jaisi cheezein. Muqarrar tareekh par khud hisaab mein likh jayengi.|تنخواہ، کرایہ، اسکول فیس جیسی چیزیں۔ مقررہ تاریخ پر خود حساب میں لکھی جائیں گی۔|Salary, rent, school fees etc. Added automatically on the set date.
+Har mahine wali entry|ہر مہینے والا اندراج|Recurring entry
+Har mahine ki tareekh|ہر مہینے کی تاریخ|Day of month
+Har mahine|ہر مہینے|Every month
+tareekh|تاریخ|date
+Kis mahine se shuru|کس مہینے سے شروع|Start month
+Maslan: makan ka kiraya|مثلاً: مکان کا کرایہ|e.g. house rent
+Chalu hai|چالو ہے|Active
+Hatayein (purani entries rahengi)|ہٹائیں (پرانے اندراج رہیں گے)|Remove (old entries stay)
+Hatayein?|ہٹائیں؟|Remove?
+Koi nahi. + dabayein.|کوئی نہیں۔ + دبائیں۔|None. Tap +.
+koi nahi|کوئی نہیں|none
+har-mahine wali entry khud likh di|ہر مہینے والے اندراج خود لکھ دیے|recurring entries added
+Abhi koi shakhs nahi.|ابھی کوئی شخص نہیں۔|No people yet.
+daba kar banda add karein.|دبا کر بندہ شامل کریں۔|to add a person.
+daba kar committee add karein.|دبا کر کمیٹی شامل کریں۔|to add a committee.
+wapsi|واپسی|due
+Wapis|واپس|Back
+Call|کال|Call
+WhatsApp|واٹس ایپ|WhatsApp
+Statement / PDF|اسٹیٹمنٹ / پی ڈی ایف|Statement / PDF
+Hisaab Statement|حساب اسٹیٹمنٹ|Account Statement
+Tafseel|تفصیل|Details
+Baqaya|بقایا|Balance
+PDF / Print|پی ڈی ایف / پرنٹ|PDF / Print
+Maine DIYE|میں نے دیے|I GAVE
+Maine LIYE|میں نے لیے|I GOT
+Maine diye|میں نے دیے|I gave
+Maine liye|میں نے لیے|I got
+udhaar diya / wapis kiya|ادھار دیا / واپس کیا|lent / repaid
+wapis mile / udhaar liya|واپس ملے / ادھار لیا|received back / borrowed
+Diye|دیے|Gave
+Liye|لیے|Got
+Poora hisaab|پورا حساب|Full history
+Koi lena dena nahi likha.|کوئی لین دین نہیں لکھا۔|No transactions yet.
+"Maine diye" = aap ne paise diye. "Maine liye" = aap ko paise mile.|"میں نے دیے" = آپ نے پیسے دیے۔ "میں نے لیے" = آپ کو پیسے ملے۔|"I gave" = you paid money. "I got" = you received money.
+Banda badlein|بندہ تبدیل کریں|Edit person
+Naya banda|نیا بندہ|New person
+Maslan: Ahmed bhai|مثلاً: احمد بھائی|e.g. Ahmed
+Mobile number (zaroori nahi)|موبائل نمبر (ضروری نہیں)|Mobile number (optional)
+Shuru ka baqaya (zaroori nahi)|شروع کا بقایا (ضروری نہیں)|Opening balance (optional)
+Wapsi ki tareekh (zaroori nahi)|واپسی کی تاریخ (ضروری نہیں)|Due date (optional)
+Banda aur iska hisaab delete karein|بندہ اور اس کا حساب حذف کریں|Delete person and history
+Purana baqaya|پرانا بقایا|Old balance
+Maslan: shaadi ke liye|مثلاً: شادی کے لیے|e.g. for wedding
+din guzar gaye|دن گزر گئے|days overdue
+din se baqi|دن سے باقی|days overdue
+din mein wapsi|دن میں واپسی|days to due
+aaj wapsi|آج واپسی|due today
+aaj akhri din|آج آخری دن|due today
+lene|لینے|receivable
+dene|دینے|payable
+Committee badlein|کمیٹی تبدیل کریں|Edit committee
+Nayi committee|نئی کمیٹی|New committee
+Committee ka naam|کمیٹی کا نام|Committee name
+Maslan: Mohalla committee|مثلاً: محلہ کمیٹی|e.g. Neighbourhood committee
+Mahana qist (Rs)|ماہانہ قسط (روپے)|Monthly instalment (Rs)
+Mahana qist|ماہانہ قسط|Monthly instalment
+Kitne members / mahine|کتنے ممبر / مہینے|Members / months
+Meri baari (number)|میری باری (نمبر)|My turn (number)
+Meri baari|میری باری|My turn
+Shuru ka mahina|شروع کا مہینہ|Start month
+Qist kis se deta hun|قسط کس سے دیتا ہوں|Pay instalment from
+Committee delete karein|کمیٹی حذف کریں|Delete committee
+Kul committee|کل کمیٹی|Total payout
+Ada ki|ادا کی|Paid
+Mil gayi|مل گئی|Received
+Committee mil gayi|کمیٹی مل گئی|Committee received
+Abhi shuru nahi hui|ابھی شروع نہیں ہوئی|Not started yet
+Committee mukammal ho gayi|کمیٹی مکمل ہو گئی|Committee completed
+Abhi mahina|ابھی مہینہ|Current month
+chal raha hai|چل رہا ہے|running
+Mahine pe tap = qist ada|مہینے پر ٹیپ = قسط ادا|Tap a month = instalment paid
+Peeli line wala mahina = aap ki baari|پیلی لائن والا مہینہ = آپ کی باری|Yellow outlined month = your turn
+Koi committee nahi.|کوئی کمیٹی نہیں۔|No committees.
+Qist ada|قسط ادا|Instalment paid
+kharche mein likh di|خرچے میں لکھ دی|added to expenses
+Mubarak ho! Aamdani mein likh di|مبارک ہو! آمدنی میں لکھ دی|Congrats! Added to income
+is mahine ki qist|اس مہینے کی قسط|this month's instalment
+Bills mein diye|بلوں میں دیے|Paid on bills
+ke bills|کے بل|bills
+Dabba tick karein = bill ada. Naam pe tap = bill edit. Credit card bill ada karne se kharcha dobara nahi ginta (sirf transfer).|خانہ ٹک کریں = بل ادا۔ نام پر ٹیپ = بل میں ترمیم۔ کریڈٹ کارڈ کا بل دینے سے خرچہ دوبارہ نہیں گنتا (صرف ٹرانسفر)۔|Tick = bill paid. Tap name = edit. Paying the card bill isn't counted as expense again (just a transfer).
+guzar gayi!|گزر گئی!|overdue!
+Bill badlein|بل تبدیل کریں|Edit bill
+Naya bill|نیا بل|New bill
+Bill ka naam|بل کا نام|Bill name
+Maslan: K-Electric|مثلاً: کے الیکٹرک|e.g. K-Electric
+Ye credit card ka bill hai?|کیا یہ کریڈٹ کارڈ کا بل ہے؟|Is this a credit card bill?
+Nahi — aam bill|نہیں — عام بل|No — regular bill
+Aam raqam (andaza)|عام رقم (اندازہ)|Usual amount (estimate)
+Bill list se hatayein|بل فہرست سے ہٹائیں|Remove bill
+Kitna diya (Rs)|کتنا دیا (روپے)|Amount paid (Rs)
+card par baqaya|کارڈ پر بقایا|card due
+Bill ada|بل ادا|Bill paid
+Koi bill nahi. + dabayein.|کوئی بل نہیں۔ + دبائیں۔|No bills. Tap +.
+Bijli ka bill|بجلی کا بل|Electricity bill
+Gas ka bill|گیس کا بل|Gas bill
+Pani ka bill|پانی کا بل|Water bill
+Credit Card bill|کریڈٹ کارڈ بل|Credit card bill
+ka khulasa|کا خلاصہ|summary
+Bachat|بچت|Savings
+Lene / Dene|لینے / دینے|Receivable / Payable
+Koi kharcha nahi|کوئی خرچہ نہیں|No expenses
+Koi aamdani nahi|کوئی آمدنی نہیں|No income
+Pichle 6 mahine|پچھلے 6 مہینے|Last 6 months
+Saal|سال|Year
+Kul aamdani|کل آمدنی|Total income
+Kul kharcha|کل خرچہ|Total expense
+Is mahine ka Excel (CSV) download|اس مہینے کا ایکسل (CSV) ڈاؤن لوڈ|Download this month's Excel (CSV)
+Aaj ke rate khud likhein (sunar / akhbar se). Ye sirf andaza hai, mukammal masla apne alim se poochein.|آج کے ریٹ خود لکھیں (سنار / اخبار سے)۔ یہ صرف اندازہ ہے، مکمل مسئلہ اپنے عالم سے پوچھیں۔|Enter today's rates yourself. This is only an estimate; ask a scholar for the full ruling.
+Sone ka rate (1 tola)|سونے کا ریٹ (1 تولہ)|Gold rate (1 tola)
+Chandi ka rate (1 tola)|چاندی کا ریٹ (1 تولہ)|Silver rate (1 tola)
+Sona (tola)|سونا (تولہ)|Gold (tola)
+Chandi (tola)|چاندی (تولہ)|Silver (tola)
+Cash + bank (Rs)|کیش + بینک (روپے)|Cash + bank (Rs)
+Jo lene hain (wapas milne ki umeed)|جو لینے ہیں (واپس ملنے کی امید)|Receivables (expected back)
+Karobar ka maal / sale ke liye cheezein (Rs)|کاروبار کا مال / فروخت کی چیزیں (روپے)|Business stock / goods for sale (Rs)
+Jo dene hain + card baqaya (Rs)|جو دینے ہیں + کارڈ بقایا (روپے)|Debts + card due (Rs)
+App se:|ایپ سے:|From app:
+Nisab chandi se (52.5 tola) — aksar ulama ki raye|نصاب چاندی سے (52.5 تولہ) — اکثر علماء کی رائے|Nisab by silver (52.5 tola) — majority view
+Hisaab lagayein|حساب لگائیں|Calculate
+Kul zakat wala maal|کل زکوٰۃ والا مال|Total zakatable wealth
+Nisab|نصاب|Nisab
+Aap par zakat (2.5%)|آپ پر زکوٰۃ (2.5%)|Zakat due (2.5%)
+Maal nisab se kam hai — zakat farz nahi|مال نصاب سے کم ہے — زکوٰۃ فرض نہیں|Below nisab — zakat not due
+Online backup|آن لائن بیک اپ|Online backup
+Online account|آن لائن اکاؤنٹ|Online account
+Abhi band hai — data sirf is phone mein hai. (config.js mein Supabase lagana hai)|ابھی بند ہے — ڈیٹا صرف اس فون میں ہے۔|Off for now — data is only on this phone.
+Notification (bill / udhaar)|نوٹیفکیشن (بل / ادھار)|Notifications (bills / loans)
+Awaz ki zuban|آواز کی زبان|Voice language
+Mahina kis tareekh se shuru ho (salary ki tareekh)|مہینہ کس تاریخ سے شروع ہو (تنخواہ کی تاریخ)|Month starts on (salary day)
+aam mahina|عام مہینہ|normal month
+tareekh se|تاریخ سے|th onward
+App ka naam|ایپ کا نام|App name
+PIN lock|پن لاک|PIN lock
+PIN laga hua hai.|پن لگا ہوا ہے۔|PIN is on.
+Abhi koi PIN nahi.|ابھی کوئی پن نہیں۔|No PIN yet.
+Naya 4 digit PIN|نیا 4 ہندسوں کا پن|New 4-digit PIN
+PIN lagayein|پن لگائیں|Set PIN
+PIN hatayein|پن ہٹائیں|Remove PIN
+PIN hata dein?|پن ہٹا دیں؟|Remove PIN?
+PIN lag gaya|پن لگ گیا|PIN set
+PIN likhein|پن لکھیں|Enter PIN
+4 se 6 number ka PIN|4 سے 6 ہندسوں کا پن|PIN of 4 to 6 digits
+Backup file|بیک اپ فائل|Backup file
+Ek extra hifazat. Mahine mein ek dafa download kar ke Google Drive par rakh lein.|اضافی حفاظت۔ مہینے میں ایک بار ڈاؤن لوڈ کر کے گوگل ڈرائیو پر رکھ لیں۔|Extra safety. Download monthly and keep it on Google Drive.
+Akhri backup:|آخری بیک اپ:|Last backup:
+Backup download karein|بیک اپ ڈاؤن لوڈ کریں|Download backup
+Backup se data wapis layein|بیک اپ سے ڈیٹا واپس لائیں|Restore from backup
+Backup download|بیک اپ ڈاؤن لوڈ|Backup downloaded
+Kharcha (tap = hatayein)|خرچہ (ٹیپ = ہٹائیں)|Expense (tap = remove)
+Sab data mitayein|سب ڈیٹا مٹائیں|Erase all data
+Saara data delete karein|سارا ڈیٹا حذف کریں|Delete all data
+Logout ke liye pehle PIN lagana zaroori hai, taake app band ho kar sirf PIN se khule. Abhi PIN lagayein?|لاگ آؤٹ کے لیے پہلے پن لگانا ضروری ہے تاکہ ایپ صرف پن سے کھلے۔ ابھی پن لگائیں؟|To log out, first set a PIN so the app opens only with it. Set PIN now?
+Delete karein?|حذف کریں؟|Delete?
+Wapsi:|واپسی:|Due:
+Haftay|ہفتے|Weeks
+zaroori nahi|ضروری نہیں|optional
+Ration|راشن|Groceries
+Bijli|بجلی|Electricity
+Pani|پانی|Water
+Gas|گیس|Gas
+Internet/Mobile|انٹرنیٹ/موبائل|Internet/Mobile
+Kiraya Aamdani|کرایہ آمدنی|Rental income
+Kiraya|کرایہ|Rent
+School Fees|اسکول فیس|School fees
+Petrol|پٹرول|Petrol
+Dawai|دوائی|Medicine
+Committee Qist|کمیٹی قسط|Committee instalment
+Committee Mili|کمیٹی ملی|Committee received
+Bahar Khana|باہر کھانا|Eating out
+Kapre|کپڑے|Clothes
+Zakat/Sadqa|زکوٰۃ/صدقہ|Zakat/Charity
+Miscellaneous|متفرق|Miscellaneous
+Salary|تنخواہ|Salary
+Business|کاروبار|Business
+Gift|تحفہ|Gift
+Doosri Aamdani|دوسری آمدنی|Other income
+Cash (jeb)|کیش (جیب)|Cash (pocket)
+Bank|بینک|Bank
+Credit Card|کریڈٹ کارڈ|Credit Card
+Login|لاگ ان|Login
+Apne account se login karein|اپنے اکاؤنٹ سے لاگ ان کریں|Log in to your account
+Jan|جنوری|Jan
+Feb|فروری|Feb
+Mar|مارچ|Mar
+Apr|اپریل|Apr
+May|مئی|May
+Jun|جون|Jun
+Jul|جولائی|Jul
+Aug|اگست|Aug
+Sep|ستمبر|Sep
+Oct|اکتوبر|Oct
+Nov|نومبر|Nov
+Dec|دسمبر|Dec`;
+let TMAP=null,TRE=null;
+if(LANG!=='ru'){TMAP={};DICT.split('\n').forEach(l=>{const p=l.split('|');if(p.length===3)TMAP[p[0]]=LANG==='ur'?p[1]:p[2]});
+  const keys=Object.keys(TMAP).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+  TRE=new RegExp('(?<![A-Za-z])('+keys.join('|')+')(?![A-Za-z])','g');
+  document.documentElement.lang=LANG;if(LANG==='ur')document.documentElement.dir='rtl';
+  const _c=window.confirm.bind(window),_a=window.alert.bind(window),_p=window.prompt.bind(window);
+  window.confirm=m=>_c(T(m));window.alert=m=>_a(T(m));window.prompt=(m,v)=>_p(T(m),v);
+}
+function T(s){return TRE&&s?String(s).replace(TRE,m=>TMAP[m]??m):s}
+function trNode(root){if(!TRE||!root)return;
+  if(root.nodeType===3){const v=root.nodeValue,n=T(v);if(n!==v)root.nodeValue=n;return}
+  if(root.nodeType!==1||root.tagName==='SCRIPT'||root.tagName==='STYLE'||root.classList&&root.classList.contains('notr'))return;
+  if(root.placeholder){const n=T(root.placeholder);if(n!==root.placeholder)root.placeholder=n}
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT,{acceptNode:n=>n.nodeType===1&&(n.tagName==='SCRIPT'||n.tagName==='STYLE'||n.classList.contains('notr'))?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+  let n;while(n=w.nextNode()){if(n.nodeType===3){const v=n.nodeValue,t=T(v);if(t!==v)n.nodeValue=t}else if(n.placeholder){const t=T(n.placeholder);if(t!==n.placeholder)n.placeholder=t}}}
+if(TRE){new MutationObserver(ms=>{ms.forEach(m=>{if(m.type==='characterData')trNode(m.target);else m.addedNodes.forEach(trNode)})}).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+  document.addEventListener('DOMContentLoaded',()=>trNode(document.body));}
+function langMenu(){
+  if($('langM')){$('langM').remove();return}
+  const m=document.createElement('div');m.className='langmenu notr';m.id='langM';
+  m.innerHTML=[['ur','اردو'],['ru','Roman Urdu'],['en','English']].map(([k,l])=>`<button class="${LANG===k?'on':''}" onclick="setLang('${k}')"><span>${l}</span>${LANG===k?'✓':''}</button>`).join('');
+  document.body.appendChild(m);setTimeout(()=>document.addEventListener('click',function h(e){if(!m.contains(e.target)&&e.target.id!=='langBtn'&&!$('langBtn').contains(e.target)){m.remove();document.removeEventListener('click',h)}}),0)}
+function setLang(k){try{localStorage.setItem('khata_lang',k)}catch(e){}location.reload()}
 
 /* ================= DRAWER (side menu) ================= */
 const DRAWER=[['Main',[['home','🏠','Home'],['hisaab','📒','Hisaab (Aamdani / Kharcha)'],['udhaar','🤝','Udhaar (Lena / Dena)'],['committee','👥','Committee'],['bills','🧾','Bills']]],
