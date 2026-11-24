@@ -165,10 +165,10 @@ function blank(){return{v:2,tx:[],people:[],led:[],committees:[],bills:[
   {id:uid(),name:'Gas ka bill',cat:'Gas',amount:0,due:10},
   {id:uid(),name:'Pani ka bill',cat:'Pani',amount:0,due:10},
   {id:uid(),name:'Credit Card bill',cat:'Credit Card Bill',amount:0,due:20,card:'card'}
- ],billPaid:{},cats:JSON.parse(JSON.stringify(DEF_CATS)),accs:defAccs(),budgets:{},goals:[],recur:[],recurDone:{},zakat:{},set:{pin:'',name:'Mera Khata',dark:false,notif:false}}}
+ ],billPaid:{},cats:JSON.parse(JSON.stringify(DEF_CATS)),accs:defAccs(),budgets:{},goals:[],recur:[],recurDone:{},zakat:{},set:{pin:'1234',pinInit:true,name:'Mera Khata',dark:false,notif:false}}}
 function defAccs(){return[{id:'cash',name:'Cash (jeb)',type:'cash',open:0},{id:'bank',name:'Bank',type:'bank',open:0},{id:'wallet',name:'JazzCash / Easypaisa',type:'wallet',open:0},{id:'card',name:'Credit Card',type:'card',open:0,limit:0}]}
 function migrate(d){
-  d.cats=d.cats||JSON.parse(JSON.stringify(DEF_CATS));d.set=d.set||{};d.billPaid=d.billPaid||{};
+  d.cats=d.cats||JSON.parse(JSON.stringify(DEF_CATS));d.set=d.set||{};if(!d.set.pinInit){if(!d.set.pin)d.set.pin='1234';d.set.pinInit=true}d.billPaid=d.billPaid||{};
   d.accs=d.accs||defAccs();d.budgets=d.budgets||{};d.goals=d.goals||[];d.recur=d.recur||[];d.recurDone=d.recurDone||{};d.zakat=d.zakat||{};
   d.tx.forEach(t=>{if(t.type!=='tr'&&t.acc===undefined)t.acc='cash'});
   d.bills.forEach(b=>{if(b.cat==='Credit Card Bill'&&!b.card){const c=d.accs.find(a=>a.type==='card');if(c)b.card=c.id}});
