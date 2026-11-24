@@ -103,6 +103,19 @@ nav button.on{color:var(--pri);font-weight:700}
 .tg{width:48px;height:28px;border-radius:20px;background:var(--line);position:relative;flex:none}
 .tg::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s}
 .tg.on{background:var(--green)}.tg.on::after{left:23px}
+.drw-bg{position:fixed;inset:0;background:rgba(10,20,40,.5);z-index:40;opacity:0;transition:.2s}
+.drw-bg.show{opacity:1}
+.drw{position:fixed;top:0;bottom:0;left:0;width:82%;max-width:310px;background:var(--card);z-index:41;transform:translateX(-100%);transition:.22s ease;display:flex;flex-direction:column;box-shadow:4px 0 20px rgba(0,0,0,.2)}
+.drw.show{transform:none}
+.drw-top{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;padding:22px 18px 18px}
+.drw-top .av{background:rgba(255,255,255,.2);color:#fff;width:52px;height:52px;font-size:24px;border-radius:16px;margin-bottom:10px}
+.drw-list{flex:1;overflow:auto;padding:8px 0}
+.drw-list button{display:flex;align-items:center;gap:14px;width:100%;background:none;padding:12px 20px;font-size:15px;text-align:left;color:var(--ink)}
+.drw-list button span{width:24px;text-align:center;font-size:19px}
+.drw-list button.on{background:var(--prisoft);color:var(--pri);font-weight:700;border-right:4px solid var(--pri)}
+.drw-sec{font-size:11px;color:var(--mut);padding:12px 20px 4px;text-transform:uppercase;letter-spacing:.6px}
+.drw-out{border-top:1px solid var(--line);padding:10px 14px calc(14px + env(safe-area-inset-bottom))}
+.drw-out button{width:100%;background:var(--redbg);color:var(--red);padding:13px;border-radius:12px;font-weight:700;font-size:15px}
 @media print{header,nav,.fab,.noprint{display:none!important}body{background:#fff}.card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}.app{padding:0}}
 </style>
 </head>
@@ -110,9 +123,9 @@ nav button.on{color:var(--pri);font-weight:700}
 <div class="app">
   <header>
     <div class="htop">
+      <button class="iconbtn" onclick="openDrawer()" title="Menu">☰</button>
       <h1 id="htitle">Mera Khata</h1>
       <span class="cloud" id="cloudSt" style="display:none"></span>
-      <button class="iconbtn" onclick="go('more')" title="Aur">☰</button>
     </div>
     <div class="month" id="monthBar">
       <button class="iconbtn" onclick="shiftMonth(-1)">‹</button>
@@ -889,6 +902,25 @@ async function logout(){if(!confirm('Logout karein? (Is phone se data hata diya 
   await sb.auth.signOut();localStorage.removeItem(KEY);location.reload()}
 window.addEventListener('online',()=>cloud.dirty&&cloudPush(true));
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&cloud.dirty)cloudPush(true);if(document.visibilityState==='visible'&&user)cloudPull()});
+
+/* ================= DRAWER (side menu) ================= */
+const DRAWER=[['Main',[['home','🏠','Home'],['hisaab','📒','Hisaab (Aamdani / Kharcha)'],['udhaar','🤝','Udhaar (Lena / Dena)'],['committee','👥','Committee'],['bills','🧾','Bills']]],
+ ['Paisa',[['accounts','💰','Accounts / Credit Card'],['budget','🎯','Budget'],['goals','⭐','Bachat goal'],['recur','🔄','Har mahine wali entries']]],
+ ['Aur',[['report','📊','Report / PDF / WhatsApp'],['zakat','🤲','Zakat'],['more','⚙️','Settings / Backup']]]];
+function openDrawer(){
+  const w=document.createElement('div');w.id='drw';
+  w.innerHTML=`<div class="drw-bg" onclick="closeDrawer()"></div><div class="drw">
+    <div class="drw-top"><div class="av">📒</div><div style="font-weight:700;font-size:18px">${esc(D.set.name||'Mera Khata')}</div>
+      <div style="font-size:12px;opacity:.85;margin-top:2px">${user?esc(user.email):'Data is phone mein'}</div></div>
+    <div class="drw-list">${DRAWER.map(([h,items])=>`<div class="drw-sec">${h}</div>`+items.map(([t,ic,l])=>`<button class="${tab===t?'on':''}" onclick="closeDrawer();stack=[];tab='${t}';window.scrollTo(0,0);render()"><span>${ic}</span>${l}</button>`).join('')).join('')}
+      <button onclick="closeDrawer();D.set.dark=!D.set.dark;save();render()"><span>${D.set.dark?'☀️':'🌙'}</span>${D.set.dark?'Light mode':'Dark mode'}</button></div>
+    <div class="drw-out"><button onclick="closeDrawer();doLogout()">⎋ Logout</button></div></div>`;
+  document.body.appendChild(w);requestAnimationFrame(()=>w.querySelectorAll('.drw-bg,.drw').forEach(e=>e.classList.add('show')))}
+function closeDrawer(){const w=$('drw');if(!w)return;w.querySelectorAll('.drw-bg,.drw').forEach(e=>e.classList.remove('show'));setTimeout(()=>w.remove(),220)}
+function doLogout(){
+  if(sb&&user)return logout();
+  if(D.set.pin){lockScreen();return}
+  if(confirm('Logout ke liye pehle PIN lagana zaroori hai, taake app band ho kar sirf PIN se khule. Abhi PIN lagayein?')){tab='more';render();setTimeout(()=>{const i=$('sPin');i&&(i.scrollIntoView({block:'center'}),i.focus())},200)}}
 
 /* ================= MODAL / LOCK ================= */
 function sheet(html){$('modal').innerHTML=`<div class="sheet-bg" onclick="if(event.target===this)closeM()"><div class="sheet">${html}</div></div>`}
